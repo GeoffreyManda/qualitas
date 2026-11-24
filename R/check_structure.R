@@ -45,7 +45,8 @@ check_column_names <- function(data, spec, options) {
   name <- names(data)
   problem <- dplyr::case_when(!nzchar(name) | is.na(name) ~ "the column has no name",
                               duplicated(name) ~ "the name repeats an earlier column",
-                              name != make.names(name) ~ "the name is not a syntactic R name",
+                              name != trimws(name) ~ "the name has spaces at its ends",
+                              grepl("[\r\n\t]", name) ~ "the name holds a line break or tab",
                               .default = NA_character_)
   check_result(tibble::tibble(column = name, message = problem) |>
                  dplyr::filter(!is.na(.data$message)),

@@ -16,20 +16,20 @@ check_near_duplicates(data, spec, options)
 \arguments{
 \item{data}{A data frame.}
 
-\item{spec}{A specification (see [spec_template()]).}
+\item{spec}{A specification (see \code{\link[=spec_template]{spec_template()}}).}
 
-\item{options}{Settings from [qualitas_options()].}
+\item{options}{Settings from \code{\link[=qualitas_options]{qualitas_options()}}.}
 }
 \value{
-A [check_result()].
+A \code{\link[=check_result]{check_result()}}.
 }
 \description{
-`check_near_duplicates()` follows Kuriakose and Robbins (2016): for each
+\code{check_near_duplicates()} follows Kuriakose and Robbins (2016): for each
 record it finds the largest share of values it shares with any other
 record, over the columns that can repeat (identifiers and columns whose
 values are nearly all different are left out), and flags shares at or
-above `near_duplicate_share`. Exact repeats are left to
-`check_duplicate_rows()`. It compares every pair of records, so it runs on
+above \code{near_duplicate_share}. Exact repeats are left to
+\code{check_duplicate_rows()}. It compares every pair of records, so it runs on
 at most 5,000 records.
 }
 \examples{

@@ -11,21 +11,23 @@ A tibble with no rows and the columns above.
 }
 \description{
 The columns of a specification, one row per data column:
-* `column`: the column name.
-* `type`: `integer`, `number`, `date`, `datetime`, `logical`, `category`
-  or `text`.
-* `role`: `id`, `date`, `enumerator`, `group`, `age`, `duration`,
-  `amount` (a sum of money or another quantity Benford's law applies to)
-  or `""`.
-* `required`: whether every record must have a value.
-* `unique`: whether every value must be different (a key).
-* `min`, `max`: the allowed range, for numbers and dates.
-* `allowed`: the allowed values, separated by `;`.
-* `pattern`: a regular expression every value must match.
-* `missing_codes`: values that stand for missing in this column,
-  separated by `;`, added to the general list.
-* `description`: what the column holds.
-* `after`: a date column this date must not precede.
+\itemize{
+\item \code{column}: the column name.
+\item \code{type}: \code{integer}, \code{number}, \code{date}, \code{datetime}, \code{logical}, \code{category}
+or \code{text}.
+\item \code{role}: \code{id}, \code{date}, \code{enumerator}, \code{group}, \code{age}, \code{duration},
+\code{amount} (a sum of money or another quantity Benford's law applies to)
+or \code{""}.
+\item \code{required}: whether every record must have a value.
+\item \code{unique}: whether every value must be different (a key).
+\item \code{min}, \code{max}: the allowed range, for numbers and dates.
+\item \code{allowed}: the allowed values, separated by \verb{;}.
+\item \code{pattern}: a regular expression every value must match.
+\item \code{missing_codes}: values that stand for missing in this column,
+separated by \verb{;}, added to the general list.
+\item \code{description}: what the column holds.
+\item \code{after}: a date column this date must not precede.
+}
 }
 \examples{
 spec_template()

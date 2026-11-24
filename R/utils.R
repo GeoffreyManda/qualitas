@@ -41,14 +41,6 @@ as_number <- function(x) {
   dplyr::if_else(readable, as.numeric(dplyr::if_else(readable, text, "0")), NA_real_)
 }
 
-# A column's values as dates; values that do not read as a date are missing.
-as_day <- function(x) {
-  if (inherits(x, "Date")) return(x)
-  if (inherits(x, "POSIXt")) return(as.Date(x))
-  # Each value is read on its own as year-month-day, so one bad value does
-  # not stop the others from being read.
-  as.Date(substr(utf8_text(as.character(x)), 1, 10), format = "%Y-%m-%d")
-}
 
 # Whether each value is truly missing: NA, or text that is empty or blank.
 is_blank <- function(x) is.na(x) | trimws(as_text(x)) %in% ""

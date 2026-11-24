@@ -16,22 +16,22 @@ check_documentation(data, spec, options)
 \arguments{
 \item{data}{A data frame.}
 
-\item{spec}{A specification (see [spec_template()]).}
+\item{spec}{A specification (see \code{\link[=spec_template]{spec_template()}}).}
 
-\item{options}{Settings from [qualitas_options()].}
+\item{options}{Settings from \code{\link[=qualitas_options]{qualitas_options()}}.}
 }
 \value{
-A [check_result()].
+A \code{\link[=check_result]{check_result()}}.
 }
 \description{
-`check_pii_values()` flags values that hold an e-mail address, in any
+\code{check_pii_values()} flags values that hold an e-mail address, in any
 column, or a telephone number (nine to fifteen digits, with an optional
-leading +), in text columns. `check_pii_columns()` flags columns whose names suggest personal
+leading +), in text columns. \code{check_pii_columns()} flags columns whose names suggest personal
 data: names, telephone numbers, e-mail and postal addresses, national
 identity or passport numbers, dates of birth and GPS coordinates. These
 are prompts to review a column before data are shared, as ISO/IEC 25012
 asks of confidentiality; they do not prove that a column is or is not
-personal data. `check_documentation()` flags columns the specification
+personal data. \code{check_documentation()} flags columns the specification
 gives no description.
 }
 \examples{

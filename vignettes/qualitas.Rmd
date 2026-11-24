@@ -1,0 +1,139 @@
+---
+title: "Assessing and reviewing data quality with qualitas"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Assessing and reviewing data quality with qualitas}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", message = FALSE)
+library(qualitas)
+```
+
+## Start with the observation unit
+
+A quality assessment compares a data snapshot with requirements for its intended use. A specification describes columns, types, keys, ranges and missing-value codes. Rules describe relationships that valid records must satisfy. `assess()` evaluates those requirements and returns findings, measures and dimension scores.
+
+This vignette uses a small synthetic intake table. Each row represents one interview. Two records share an identifier, one age is outside its allowed range, and one district is missing.
+
+```{r intake}
+intake <- data.frame(
+  interview_id = c("I01", "I02", "I02", "I04"),
+  age = c(28L, 240L, 41L, 35L),
+  district = c("North", "South", "South", NA_character_),
+  consent = c("yes", "yes", "yes", "yes")
+)
+intake
+```
+
+## Describe the requirements
+
+`infer_spec()` provides a starting specification from the observed data. Review it against the questionnaire, data dictionary and analysis requirements. Inferred ranges and categories describe what is present; explicit requirements define what is valid.
+
+Here, identifiers are required and unique, ages must be between 18 and 100, and district values must belong to the stated list. `spec_complete()` supplies the remaining specification fields.
+
+```{r specification}
+spec <- spec_complete(tibble::tibble(
+  column = c("interview_id", "age", "district", "consent"),
+  type = c("text", "integer", "category", "category"),
+  role = c("id", "age", "group", ""),
+  required = c(TRUE, TRUE, TRUE, TRUE),
+  unique = c(TRUE, FALSE, FALSE, FALSE),
+  min = c(NA_character_, "18", NA_character_, NA_character_),
+  max = c(NA_character_, "100", NA_character_, NA_character_),
+  allowed = c(NA_character_, NA_character_, "North;South", "yes;no"),
+  description = c("Interview identifier", "Age in completed years",
+                  "District of interview", "Consent given")
+))
+result <- assess(intake, spec = spec, checks = c("CO02", "UN02", "VA02"),
+                 name = "synthetic intake")
+```
+
+The selected checks evaluate required values, repeated keys and numeric ranges. Omit `checks` to run the full catalogue. Some checks need a declared column role or an optional package; inspect each measure's status to see what was evaluated.
+
+## Read findings before the overall score
+
+```{r findings}
+issues(result)
+measures(result)
+scores(result)
+```
+
+`issues()` identifies the check, column, row and observed value behind each finding. Row coordinates refer to the assessed snapshot. A record may produce findings under more than one check, so the number of issues is not a count of distinct defective records.
+
+Each check's measure identifies its observation unit and denominator. Its score is the share of assessed units that passed, calculated as `1 - flagged / checked` when a denominator is available. Dimension scores combine check scores using severity weights. Review the denominators, individual findings and assessment status alongside any summary score.
+
+Statistical diagnostics such as age heaping, digit preference and interviewer differences identify patterns for investigation. Interpretation depends on the measurement process and population; a flag alone does not establish fabrication.
+
+## Add a record-level rule
+
+Rules are expressions that evaluate to `TRUE` for a valid record. This rule requires consent. Use reviewed rule expressions from a trusted source because they are evaluated as R expressions against the data.
+
+```{r rules}
+rule_result <- assess(intake, spec = spec, rules = c(consented = "consent == 'yes'"),
+                      checks = "CS01", name = "synthetic consent review")
+issues(rule_result)
+```
+
+## Record a correction and reassess
+
+A cleaning log records the proposed action, replacement value, reason and decision maker. In this synthetic example, the exercise supplies a verified age of 24 for the second record. The duplicate identifier and missing district still require separate review.
+
+```{r cleaning}
+log <- cleaning_log(result)
+log$action <- "keep"
+log$reason <- "Retained pending review in this example"
+selected <- which(log$column == "age" & log$row == 2L)
+log$action[selected] <- "change"
+log$new_value[selected] <- "24"
+log$reason[selected] <- "The synthetic exercise specifies age 24"
+log$decided_by[selected] <- "Example reviewer"
+corrected <- apply_log(intake, log)
+rechecked <- assess(corrected, spec = spec, checks = c("CO02", "UN02", "VA02"),
+                    name = "reviewed synthetic intake")
+issues(rechecked)
+stopifnot(corrected$age[2] == 24L)
+```
+
+Reassessment shows which findings remain after the recorded decision. Retain the original snapshot and the applied log in the project's established data-management system.
+
+## Compare deliveries
+
+`compare_data()` describes changes between two deliveries, including column structure and distributions. Compare snapshots that represent the same observation unit and comparable populations.
+
+```{r comparison}
+comparison <- compare_data(intake, corrected)
+comparison
+```
+
+## Export a report
+
+`report()` writes HTML, or a Word document when its optional dependencies are installed. Reports include findings and observed values, so review them for confidential content before sharing. `max_issues` limits displayed findings while the assessment retains the complete findings table.
+
+```{r report}
+local({
+  path <- tempfile(fileext = ".html")
+  on.exit(unlink(path), add = TRUE)
+  report(rechecked, path, max_issues = 20)
+  stopifnot(file.exists(path), file.info(path)$size > 0)
+})
+```
+
+Use a permanent output path when retaining a report. `write_results()` exports assessment tables and JSON; the installed function help describes its files and return value.
+
+## Explore the larger synthetic survey
+
+The package includes a synthetic survey with planted defects, together with its specification and rules. Its generator is maintained in the tests. Identifiers, telephone-like strings and free-text examples are generated fixtures, not collected respondent records.
+
+```{r bundled-survey}
+example_path <- system.file("extdata", "messy_survey.csv", package = "qualitas")
+survey <- read.csv(example_path, stringsAsFactors = FALSE)
+dim(survey)
+checks_catalogue()[, c("check_id", "dimension")]
+```
+
+## Method references
+
+The check catalogue records the source and framework mapping for each check. The package draws on the harmonised terminology of Kahn et al. (2016), <https://doi.org/10.13063/2327-9214.1244>, the data-quality framework of Schmidt et al. (2021), <https://doi.org/10.1186/s12874-021-01252-7>, and the measurement approach of Pipino, Lee and Wang (2002), <https://doi.org/10.1145/505248.506010>. These mappings explain the package's organisation and do not represent formal certification against a standard.

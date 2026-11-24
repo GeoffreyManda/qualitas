@@ -16,21 +16,21 @@ check_period_gaps(data, spec, options)
 \arguments{
 \item{data}{A data frame.}
 
-\item{spec}{A specification (see [spec_template()]).}
+\item{spec}{A specification (see \code{\link[=spec_template]{spec_template()}}).}
 
-\item{options}{Settings from [qualitas_options()].}
+\item{options}{Settings from \code{\link[=qualitas_options]{qualitas_options()}}.}
 }
 \value{
-A [check_result()].
+A \code{\link[=check_result]{check_result()}}.
 }
 \description{
-`check_foreign_keys()` reads the links in `options$relations`, a table
-with the columns `column` (in the data), `table` (a name in
-`options$tables`) and `key` (the column of that table it must match), and
-flags values with no match. [assess_tables()] sets both for a set of
-linked tables. `check_currentness()` flags a date column whose latest date
-is more than `max_age_days` before `as_of`. `check_period_gaps()` flags
-each `period` (month, week or quarter) between the first and last date
+\code{check_foreign_keys()} reads the links in \code{options$relations}, a table
+with the columns \code{column} (in the data), \code{table} (a name in
+\code{options$tables}) and \code{key} (the column of that table it must match), and
+flags values with no match. \code{\link[=assess_tables]{assess_tables()}} sets both for a set of
+linked tables. \code{check_currentness()} flags a date column whose latest date
+is more than \code{max_age_days} before \code{as_of}. \code{check_period_gaps()} flags
+each \code{period} (month, week or quarter) between the first and last date
 that holds no record.
 }
 \examples{

@@ -15,9 +15,9 @@ records, as in data with one row per person and year.}
 }
 \value{
 A specification: a tibble with one row per column and the columns
-  `column`, `type`, `role`, `required`, `unique`, `min`, `max`, `allowed`,
-  `pattern`, `missing_codes`, `description` and `after` (see
-  [spec_template()]).
+\code{column}, \code{type}, \code{role}, \code{required}, \code{unique}, \code{min}, \code{max}, \code{allowed},
+\code{pattern}, \code{missing_codes}, \code{description} and \code{after} (see
+\code{\link[=spec_template]{spec_template()}}).
 }
 \description{
 Reads each column and writes one row of the specification: its type, its

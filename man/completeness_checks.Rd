@@ -19,12 +19,12 @@ check_record_completeness(data, spec, options)
 \arguments{
 \item{data}{A data frame.}
 
-\item{spec}{A specification (see [spec_template()]).}
+\item{spec}{A specification (see \code{\link[=spec_template]{spec_template()}}).}
 
-\item{options}{Settings from [qualitas_options()].}
+\item{options}{Settings from \code{\link[=qualitas_options]{qualitas_options()}}.}
 }
 \value{
-A [check_result()].
+A \code{\link[=check_result]{check_result()}}.
 }
 \description{
 Checks of completeness

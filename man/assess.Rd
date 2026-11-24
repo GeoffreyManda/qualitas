@@ -16,27 +16,26 @@ assess(
 \arguments{
 \item{data}{A data frame.}
 
-\item{spec}{A specification (see [spec_template()]), a path to one, or
-`NULL` to infer it from the data with [infer_spec()].}
+\item{spec}{A specification (see \code{\link[=spec_template]{spec_template()}}), a path to one, or
+\code{NULL} to infer it from the data with \code{\link[=infer_spec]{infer_spec()}}.}
 
-\item{rules}{Rules records must keep: a table from [read_rules()], a path
-to one, or `NULL`.}
+\item{rules}{Rules records must keep: a table from \code{\link[=read_rules]{read_rules()}}, a path
+to one, or \code{NULL}.}
 
-\item{options}{Settings from [qualitas_options()].}
+\item{options}{Settings from \code{\link[=qualitas_options]{qualitas_options()}}.}
 
-\item{checks}{Identifiers of the checks to run, such as `c("CO01",
-"UN02")`; `NULL` runs them all.}
+\item{checks}{Identifiers of the checks to run, such as \code{c("CO01", "UN02")}; \code{NULL} runs them all.}
 
 \item{name}{A name for the data set, used in reports.}
 }
 \value{
-An assessment: a list of class `qualitas_assessment` with `issues`,
-  `measures`, `scores`, `spec`, `options` and a description of the data.
-  Read it with [issues()], [measures()], [scores()], [report()] and
-  [cleaning_log()].
+An assessment: a list of class \code{qualitas_assessment} with \code{issues},
+\code{measures}, \code{scores}, \code{spec}, \code{options} and a description of the data.
+Read it with \code{\link[=issues]{issues()}}, \code{\link[=measures]{measures()}}, \code{\link[=scores]{scores()}}, \code{\link[=report]{report()}} and
+\code{\link[=cleaning_log]{cleaning_log()}}.
 }
 \description{
-Runs every check of the catalogue (or those named in `checks`) on `data`
+Runs every check of the catalogue (or those named in \code{checks}) on \code{data}
 against its specification, and gathers what they found: each problem with
 its row, column and value, a measure for each check stated as units
 checked, units flagged and the share that passed, and a score for each

@@ -8,7 +8,13 @@
 #' for Poverty Action; World Bank DIME). `check_short_duration()` flags
 #' interviews in a column whose role is `duration` shorter than
 #' `min_duration`, or, when that is not set, shorter than
-#' `short_duration_share` of the median. `check_straightlining()` treats
+#' `short_duration_share` of the median. Without a duration column, the
+#' length is the time from the column whose role is `start` to the one whose
+#' role is `end`, in minutes, and an interview that ends before it starts is
+#' flagged too, as is one longer than `longest_interview` when that is set.
+#' `check_interview_hours()` flags starts and ends outside `working_hours`,
+#' given as two times such as `c("07:00", "19:00")`; it runs only when they
+#' are set, since no general rule fixes the hours of fieldwork. `check_straightlining()` treats
 #' columns whose names differ only by a final number (`q1`, `q2`, `q3`) as
 #' one block, and flags records that give the same answer to every item of
 #' a block of at least `straightline_min_items` items.
@@ -24,22 +30,6 @@
 #' data <- data.frame(duration_min = c(40, 35, 42, 38, 4))
 #' check_short_duration(data, infer_spec(data), qualitas_options())
 NULL
-
-#' @rdname interview_checks
-#' @export
-check_short_duration <- function(data, spec, options) {
-  timed <- columns_with_role(spec, data, "duration")
-  found <- purrr::map(timed, \(column) {
-    minutes <- as_number(data[[column]])
-    limit <- dplyr::coalesce(options$min_duration,
-                             options$short_duration_share * stats::median(minutes, na.rm = TRUE))
-    cell_issues(data[[column]], column, minutes < limit,
-                sprintf("the interview is shorter than %.1f", limit))
-  }) |>
-    purrr::list_rbind() |>
-    dplyr::bind_rows(no_issues())
-  check_result(found, checked = count_numbers(data, timed))
-}
 
 #' @rdname interview_checks
 #' @export

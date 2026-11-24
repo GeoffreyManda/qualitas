@@ -7,7 +7,7 @@
 write_results(x, dir, prefix = "qualitas")
 }
 \arguments{
-\item{x}{An assessment from [assess()].}
+\item{x}{An assessment from \code{\link[=assess]{assess()}}.}
 
 \item{dir}{The folder to write into; it is created if needed.}
 

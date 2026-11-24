@@ -7,3 +7,5 @@ docs/
 *.Rcheck/
 qualitas_*.tar.gz
 plan.md
+
+outputs/

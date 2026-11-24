@@ -7,15 +7,15 @@
 spec_complete(spec)
 }
 \arguments{
-\item{spec}{A data frame with at least a `column` column.}
+\item{spec}{A data frame with at least a \code{column} column.}
 }
 \value{
-A specification with every column of [spec_template()].
+A specification with every column of \code{\link[=spec_template]{spec_template()}}.
 }
 \description{
-Adds the columns of [spec_template()] that a specification leaves out, in
-order, reads empty cells as missing, sets `required` and `unique` to
-`FALSE` where they are not given, and keeps every other field as text. A
+Adds the columns of \code{\link[=spec_template]{spec_template()}} that a specification leaves out, in
+order, reads empty cells as missing, sets \code{required} and \code{unique} to
+\code{FALSE} where they are not given, and keeps every other field as text. A
 specification can therefore be written with only the columns it needs.
 }
 \examples{

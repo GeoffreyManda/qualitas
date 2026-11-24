@@ -17,31 +17,31 @@ check_age_heaping(data, spec, options)
 \arguments{
 \item{data}{A data frame.}
 
-\item{spec}{A specification (see [spec_template()]).}
+\item{spec}{A specification (see \code{\link[=spec_template]{spec_template()}}).}
 
-\item{options}{Settings from [qualitas_options()].}
+\item{options}{Settings from \code{\link[=qualitas_options]{qualitas_options()}}.}
 }
 \value{
-A [check_result()].
+A \code{\link[=check_result]{check_result()}}.
 }
 \description{
-`check_digit_preference()` tests whether the last digits of a measured
+\code{check_digit_preference()} tests whether the last digits of a measured
 column are uniform, with a chi-square test on nine degrees of freedom, and
 reports the digit preference score of the SMART methodology,
 100 sqrt(chi-square / (n x 9)), where 0 means no preference. A column is
-flagged when the p-value is below `digit_p` and the score above
-`digit_score_max` (20, the band SMART calls problematic), with at least
-`digit_min_n` values whose middle half spans at least `digit_min_iqr`
+flagged when the p-value is below \code{digit_p} and the score above
+\code{digit_score_max} (20, the band SMART calls problematic), with at least
+\code{digit_min_n} values whose middle half spans at least \code{digit_min_iqr}
 steps of the recorded place (values of 1 to 12 end in 1 and 2 more often
 by nature). Values recorded in tens are read one place up, and values
 recorded in fives are not tested. The
 recorded place is the number of decimals most values carry; columns
-recorded to more than `digit_max_places` decimals are computed values
+recorded to more than \code{digit_max_places} decimals are computed values
 and are not tested.
-`check_age_heaping()` computes the Whipple index over ages 23 to
-62 of each column whose role is `age`: 100 means no heaping on ages
-ending in 0 or 5, 500 means every age ends in 0 or 5. `check_benford()`
-compares the first digits of each column whose role is `amount`, positive
+\code{check_age_heaping()} computes the Whipple index over ages 23 to
+62 of each column whose role is \code{age}: 100 means no heaping on ages
+ending in 0 or 5, 500 means every age ends in 0 or 5. \code{check_benford()}
+compares the first digits of each column whose role is \code{amount}, positive
 and spanning at least two orders of magnitude, with Benford's law, by mean
 absolute deviation (Nigrini 2012); the law holds for amounts such as
 payments, not for measurements, counts or identifiers, so no column is

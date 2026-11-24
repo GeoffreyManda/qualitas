@@ -19,15 +19,15 @@ assess_tables(
 without one has its specification inferred.}
 
 \item{relations}{A data frame of links, one row each, with the columns
-`from` (the table holding the key), `column` (the key), `table` (the
-table it refers to) and `key` (the column it must match there).}
+\code{from} (the table holding the key), \code{column} (the key), \code{table} (the
+table it refers to) and \code{key} (the column it must match there).}
 
-\item{options}{Settings from [qualitas_options()].}
+\item{options}{Settings from \code{\link[=qualitas_options]{qualitas_options()}}.}
 
-\item{...}{Passed to [assess()], for example `checks`.}
+\item{...}{Passed to \code{\link[=assess]{assess()}}, for example \code{checks}.}
 }
 \value{
-A named list of assessments, of class `qualitas_assessments`.
+A named list of assessments, of class \code{qualitas_assessments}.
 }
 \description{
 Assesses each table of a relational data set, such as households and

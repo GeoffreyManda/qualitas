@@ -7,14 +7,14 @@
 check_result(issues = no_issues(), checked = 0L)
 }
 \arguments{
-\item{issues}{A table with `column`, `row`, `value` and `message`; columns
+\item{issues}{A table with \code{column}, \code{row}, \code{value} and \code{message}; columns
 that are absent are added as missing.}
 
 \item{checked}{The number of units (cells, records, columns or tables)
 the check examined; zero when the check did not apply.}
 }
 \value{
-A list with `issues` and `checked`.
+A list with \code{issues} and \code{checked}.
 }
 \description{
 Checks return the problems they found and the number of units they

@@ -7,9 +7,9 @@
 report(x, file, max_issues = 1000)
 }
 \arguments{
-\item{x}{An assessment from [assess()].}
+\item{x}{An assessment from \code{\link[=assess]{assess()}}.}
 
-\item{file}{The file to write: a name ending in `.html` or `.docx`.}
+\item{file}{The file to write: a name ending in \code{.html} or \code{.docx}.}
 
 \item{max_issues}{The most issues to list; all are counted.}
 }
@@ -20,7 +20,7 @@ The path written, invisibly.
 Writes a self-contained HTML page or, with the officer and flextable
 packages installed, a Word document. The report gives the scores by
 dimension, every check with the units it examined and flagged, the issues
-found (up to `max_issues`), the specification assessed against, and a note
+found (up to \code{max_issues}), the specification assessed against, and a note
 on how the measures and scores are computed.
 }
 \examples{

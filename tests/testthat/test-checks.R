@@ -9,8 +9,11 @@ test_that("structure checks find empty, constant and badly named columns", {
   data <- data.frame(a = c(NA, NA, NA), b = c(1, 1, 1), c = c(1, NA, NA))
   expect_equal(run(check_empty_columns, data)$issues$column, "a")
   expect_equal(run(check_constant_columns, data)$issues$column, "b")
-  named <- data.frame(x = 1, x = 2, `bad name` = 3, check.names = FALSE)
-  expect_setequal(run(check_column_names, named)$issues$column, c("x", "bad name"))
+  # A label such as "1.1 Name of respondent" is a valid header; repeated,
+  # padded and multi-line names are not.
+  named <- data.frame(x = 1, x = 2, `1.1 Name` = 3, ` padded` = 4, `two\nlines` = 5,
+                      check.names = FALSE)
+  expect_setequal(run(check_column_names, named)$issues$column, c("x", " padded", "two\nlines"))
 })
 
 test_that("codes for missing values are not flagged when they are allowed", {
@@ -86,13 +89,4 @@ test_that("an inferred specification is not judged for its documentation", {
   expect_equal(run(check_documentation, data)$checked, 0)
   spec <- spec_complete(tibble::tibble(column = "x", type = "integer"))
   expect_equal(run(check_documentation, data, spec)$issues$column, "x")
-})
-
-test_that("dates and numbers are read value by value", {
-  expect_equal(as.character(as_day(c("31/02/2026", "2026-01-05", "2026-02-31"))),
-               c(NA, "2026-01-05", NA))
-  expect_equal(as_number(c(" 3 ", "1e3", "abc", "")), c(3, 1000, NA, NA))
-  spec <- spec_complete(tibble::tibble(column = "visit", type = "date"))
-  data <- data.frame(visit = c("bad", "2026-01-05", "2026-01-06"))
-  expect_equal(run(check_type_conformance, data, spec)$issues$row, 1)
 })

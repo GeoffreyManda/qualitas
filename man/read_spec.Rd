@@ -10,17 +10,17 @@ read_spec(path)
 write_spec(spec, path)
 }
 \arguments{
-\item{path}{Path to a `.csv`, `.yaml` or `.yml` file.}
+\item{path}{Path to a \code{.csv}, \code{.yaml} or \code{.yml} file.}
 
 \item{spec}{A specification.}
 }
 \value{
-`read_spec()` returns the specification; `write_spec()` returns
-  `path`, invisibly.
+\code{read_spec()} returns the specification; \code{write_spec()} returns
+\code{path}, invisibly.
 }
 \description{
 A specification is kept as a CSV file (one row per column, the columns of
-[spec_template()]) or a YAML file (a list of columns, each with the same
+\code{\link[=spec_template]{spec_template()}}) or a YAML file (a list of columns, each with the same
 fields), so it can be edited in a spreadsheet and kept under version
 control beside the data.
 }

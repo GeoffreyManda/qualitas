@@ -10,19 +10,19 @@
 \method{summary}{qualitas_assessment}(object, n = 10, ...)
 }
 \arguments{
-\item{x, object}{An assessment from [assess()].}
+\item{x, object}{An assessment from \code{\link[=assess]{assess()}}.}
 
 \item{n}{How many checks to list.}
 
 \item{...}{Not used.}
 }
 \value{
-`print()` returns `x` invisibly; `summary()` a list with `overall`,
-  `scores`, `top_checks` and the counts of issues by severity.
+\code{print()} returns \code{x} invisibly; \code{summary()} a list with \code{overall},
+\code{scores}, \code{top_checks} and the counts of issues by severity.
 }
 \description{
-`print()` shows the size of the data, the overall score, the score of
-each dimension and the checks that found the most problems. `summary()`
+\code{print()} shows the size of the data, the overall score, the score of
+each dimension and the checks that found the most problems. \code{summary()}
 returns the same figures as a list. The overall score is the mean of the
 dimension scores, so each dimension counts once however many checks it
 holds.

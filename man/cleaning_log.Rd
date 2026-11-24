@@ -10,26 +10,26 @@ cleaning_log(x)
 apply_log(data, log)
 }
 \arguments{
-\item{x}{An assessment from [assess()].}
+\item{x}{An assessment from \code{\link[=assess]{assess()}}.}
 
 \item{data}{The data the assessment was run on.}
 
 \item{log}{A cleaning log: a data frame or a path to a CSV file.}
 }
 \value{
-`cleaning_log()` returns a tibble with one row per issue that
-  points to a record. `apply_log()` returns the cleaned data, with the
-  log of what was applied as its `cleaning` attribute.
+\code{cleaning_log()} returns a tibble with one row per issue that
+points to a record. \code{apply_log()} returns the cleaned data, with the
+log of what was applied as its \code{cleaning} attribute.
 }
 \description{
 A cleaning log records, for each problem found, what is to be done about
 it and why, as in the data-cleaning guidance of REACH and the World Bank
 DIME team: nothing is changed in the data until a person has decided, and
 every change can be traced back to the problem that prompted it.
-`cleaning_log()` turns the issues of an assessment into a log to fill in:
-write it to a CSV file, set `action` for each row to `keep`, `change` or
-`remove`, give `new_value` for changes and `reason` for each decision.
-`apply_log()` then makes the changes and removals, and returns the cleaned
+\code{cleaning_log()} turns the issues of an assessment into a log to fill in:
+write it to a CSV file, set \code{action} for each row to \code{keep}, \code{change} or
+\code{remove}, give \code{new_value} for changes and \code{reason} for each decision.
+\code{apply_log()} then makes the changes and removals, and returns the cleaned
 data; the original data are not modified.
 }
 \examples{

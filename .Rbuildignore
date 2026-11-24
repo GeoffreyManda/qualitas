@@ -5,3 +5,7 @@
 ^\.github$
 ^\.lintr$
 ^plan\.md$
+
+^cran-comments\.md$
+
+^outputs$

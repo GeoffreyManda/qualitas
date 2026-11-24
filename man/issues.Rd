@@ -13,7 +13,7 @@ measures(x)
 scores(x)
 }
 \arguments{
-\item{x}{An assessment from [assess()].}
+\item{x}{An assessment from \code{\link[=assess]{assess()}}.}
 
 \item{dimension, severity}{Keep only issues of these dimensions or
 severities.}
@@ -22,13 +22,15 @@ severities.}
 A tibble.
 }
 \description{
-* `issues()`: every problem found, one row each, with the check, its
-  dimension and severity, the column, the row, the value and a message.
-* `measures()`: one row per check, with the units checked and flagged, the
-  share that passed, its status and its mapping to ISO/IEC 25012, Kahn et
-  al. (2016) and dataquieR.
-* `scores()`: one row per dimension, with the severity-weighted mean of its
-  check scores and the lowest of them.
+\itemize{
+\item \code{issues()}: every problem found, one row each, with the check, its
+dimension and severity, the column, the row, the value and a message.
+\item \code{measures()}: one row per check, with the units checked and flagged, the
+share that passed, its status and its mapping to ISO/IEC 25012, Kahn et
+al. (2016) and dataquieR.
+\item \code{scores()}: one row per dimension, with the severity-weighted mean of its
+check scores and the lowest of them.
+}
 }
 \examples{
 result <- assess(data.frame(id = c(1, 1, 2), age = c(30, NA, 300)), name = "toy")

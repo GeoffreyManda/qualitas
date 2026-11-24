@@ -23,7 +23,12 @@
     "tests/**",
     "inst/**",
     ".github/**",
-    "plan.md"
+    "plan.md",
+    "vignettes/**",
+    "cran-comments.md",
+    "inst/extdata/README.md",
+    "outputs/qualitas-manual.pdf",
+    "outputs/qualitas_0.1.0.tar.gz"
   ],
   "files": {
     "R/**": {
@@ -67,6 +72,19 @@
     "inst/benchmark/**": {
       "role": "Benchmark: assesses a random sample of public data sets from the Rdatasets archive and records errors, timing and flag rates",
       "phase": "package-benchmark"
+    },
+    "vignettes/**": {
+      "role": "Executable getting-started vignette for package users",
+      "phase": "package-documentation"
+    },
+    "cran-comments.md": {
+      "role": "First CRAN submission notes and actual check results; excluded from package archive"
+    },
+    "outputs/qualitas-manual.pdf": {
+      "role": "Current PDF reference manual for review; generated and untracked"
+    },
+    "outputs/qualitas_0.1.0.tar.gz": {
+      "role": "Current source submission archive for review; generated and untracked"
     }
   },
   "governance": {

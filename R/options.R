@@ -38,6 +38,15 @@
 #'     column's unit (`NA`, not checked).
 #'   * `short_duration_share`: when `min_duration` is not set, the share of
 #'     the median duration below which an interview is too short (1/3).
+#'   * `longest_interview`: longest plausible interview in minutes (`NA`,
+#'     not checked).
+#'   * `working_hours`: the first and last time of day an interview may
+#'     start or end, such as `c("07:00", "19:00")` (`NA`, not checked).
+#'   * `alignment_share`, `alignment_record_share`, `alignment_min_cells`,
+#'     `alignment_min_columns`: for [check_row_alignment()], the share of a
+#'     column's values that sets its usual kind (0.9), the share of a record's
+#'     values of another kind that flags it (0.5), the fewest such values (3)
+#'     and the fewest typed columns needed (5).
 #'   * `straightline_min_items`: fewest items of a block for straightlining (5).
 #'   * `enumerator_difference`: difference between an enumerator's mean and
 #'     the other enumerators', in standard deviations of their records,
@@ -59,30 +68,4 @@
 #' @export
 #' @examples
 #' qualitas_options(outlier_z = 3)$outlier_z
-qualitas_options <- function(...) {
-  defaults <- list(
-    as_of = Sys.Date(),
-    missing_codes = c("NA", "N/A", "n/a", "na", "NULL", "null", "-", "--", ".", "?",
-                      "none", "None", "unknown", "Unknown", "-99", "-999", "9999", "-9"),
-    record_missing_share = 0.5, outlier_z = 3.5, group_min_n = 10L,
-    near_duplicate_share = 0.95, digit_p = 0.001, digit_min_n = 50L, digit_min_iqr = 20,
-    digit_score_max = 20,
-    digit_coarse_share = 0.95,
-    digit_max_places = 2L, log_skew_min = 0.2,
-    benford_mad = 0.015, benford_min_n = 1000L, whipple_max = 110,
-    mixed_type_share = 0.8, min_duration = NA_real_, short_duration_share = 1 / 3,
-    straightline_min_items = 5L, enumerator_difference = 0.5,
-    max_age_days = NA_real_, period = NA_character_,
-    email_pattern = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}",
-    phone_pattern = "(?<![\\d.])\\+?(?:\\d[\\s().-]?){8,14}\\d(?![\\d.])",
-    pii_name_pattern = paste0("(^|_)(first_?name|last_?name|surname|full_?name|name|phone|",
-                              "mobile|tel|email|e_mail|address|national_?id|nid|passport|",
-                              "dob|birth_?date|date_?of_?birth|gps|latitude|longitude|",
-                              "lat|lon|long|lng)",
-                              "(_|$)"),
-    drift_missing = 0.1, drift_shift = 0.5, drift_psi = 0.25,
-    rules = NULL,
-    tables = list(), relations = NULL
-  )
-  utils::modifyList(defaults, list(...))
-}
+qualitas_options <- function(...) utils::modifyList(option_defaults(), list(...))

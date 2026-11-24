@@ -16,25 +16,25 @@ check_date_order(data, spec, options)
 \arguments{
 \item{data}{A data frame.}
 
-\item{spec}{A specification (see [spec_template()]).}
+\item{spec}{A specification (see \code{\link[=spec_template]{spec_template()}}).}
 
-\item{options}{Settings from [qualitas_options()].}
+\item{options}{Settings from \code{\link[=qualitas_options]{qualitas_options()}}.}
 }
 \value{
-A [check_result()].
+A \code{\link[=check_result]{check_result()}}.
 }
 \description{
 Outliers are found with the modified z-score of Iglewicz and Hoaglin
 (1993), 0.6745 (x - median) / MAD, which the median and the median
 absolute deviation keep from being pulled by the outliers themselves.
 Positive values with a quartile skewness (Bowley) of at least
-`log_skew_min`, such as incomes and laboratory results, are judged on the
+\code{log_skew_min}, such as incomes and laboratory results, are judged on the
 log scale when that makes their quartiles more symmetric.
-`check_group_outliers()` applies it within each group of a column whose
-role is `group` (a district, a facility), for groups of at least
-`group_min_n` values, so a value usual in one place but not in another is
-found. `check_date_order()` compares each date column with the column its
-specification names in `after`.
+\code{check_group_outliers()} applies it within each group of a column whose
+role is \code{group} (a district, a facility), for groups of at least
+\code{group_min_n} values, so a value usual in one place but not in another is
+found. \code{check_date_order()} compares each date column with the column its
+specification names in \code{after}.
 }
 \examples{
 data <- data.frame(weight = c(10:20, 95))

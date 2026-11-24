@@ -147,3 +147,24 @@ citation("qualitas")
 ```
 
 MIT licence. Copyright 2026 Geoffrey Manda.
+
+## Worked guide
+
+After installing a build that includes vignettes, open the complete synthetic workflow:
+
+```r
+vignette("qualitas", package = "qualitas")
+```
+
+The guide covers the observation unit, a reviewed specification, findings and denominators, rules, a cleaning log, reassessment, delivery comparison and report export. Its source is [vignettes/qualitas.Rmd](vignettes/qualitas.Rmd). For a GitHub installation with the guide, use `remotes::install_github("GeoffreyManda/qualitas", build_vignettes = TRUE)` with `knitr`, `rmarkdown` and Pandoc installed.
+
+## Preparing a source release
+
+Build the source package and check the resulting archive before submission:
+
+```sh
+R CMD build .
+R CMD check --as-cran qualitas_0.1.0.tar.gz
+```
+
+A full manual check requires a TeX installation. Submission notes are maintained in `cran-comments.md`; they state the actual check environments and any outstanding results. The package has not yet been accepted by CRAN.

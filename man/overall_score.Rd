@@ -7,10 +7,10 @@
 overall_score(x)
 }
 \arguments{
-\item{x}{An assessment from [assess()].}
+\item{x}{An assessment from \code{\link[=assess]{assess()}}.}
 }
 \value{
-A number between 0 and 1, or `NA` when no check applied.
+A number between 0 and 1, or \code{NA} when no check applied.
 }
 \description{
 The overall score of an assessment

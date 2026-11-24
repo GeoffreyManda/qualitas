@@ -9,19 +9,19 @@ compare_data(old, new, options = qualitas_options())
 \arguments{
 \item{old, new}{The earlier and the later data.}
 
-\item{options}{Settings from [qualitas_options()]; `drift_missing`,
-`drift_shift` and `drift_psi` set when a column is flagged.}
+\item{options}{Settings from \code{\link[=qualitas_options]{qualitas_options()}}; \code{drift_missing},
+\code{drift_shift} and \code{drift_psi} set when a column is flagged.}
 }
 \value{
-A tibble with one row per column: `column`, `status`, `type_old`,
-  `type_new`, `missing_old`, `missing_new`, `shift`, `measure` and
-  `flagged`.
+A tibble with one row per column: \code{column}, \code{status}, \code{type_old},
+\code{type_new}, \code{missing_old}, \code{missing_new}, \code{shift}, \code{measure} and
+\code{flagged}.
 }
 \description{
 Data that arrive in rounds (monthly reports, survey waves, new extracts of
 a register) can change in ways no single assessment shows: a column is
 dropped, a code list changes, missing values rise, a mean moves. For each
-column, `compare_data()` reports whether it was added, removed or changed
+column, \code{compare_data()} reports whether it was added, removed or changed
 type, the change in its share of missing values, and a measure of how far
 its values moved: for numbers, the difference of the medians in units of
 the earlier median absolute deviation; for categories, the population

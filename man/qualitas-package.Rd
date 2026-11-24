@@ -4,10 +4,33 @@
 \name{qualitas-package}
 \alias{qualitas}
 \alias{qualitas-package}
-\title{qualitas: General Data Quality Assessment with Rules, Scores and Reports}
+\title{Data quality assessment with specifications and reviewable findings}
 \description{
-Assesses the quality of any rectangular data set against a data specification that can be inferred from the data or written by the user. More than thirty checks cover structure, completeness, uniqueness, validity, consistency, plausibility, relational integrity, timeliness, fabrication and confidentiality. Each check is mapped to ISO/IEC 25012, the harmonised terminology of Kahn et al. (2016) \doi{10.13063/2327-9214.1244} and the framework of Schmidt et al. (2021) \doi{10.1186/s12874-021-01252-7}. Every finding is reported with its row, column and value; every measure as a numerator, a denominator and a ratio in the form of Pipino, Lee and Wang (2002) \doi{10.1145/505248.506010}. Results feed a cleaning log that can be applied and re-assessed, and are written as an HTML or Word report, a JSON file or tidy tables.
+\code{qualitas} assesses rectangular data against a specification and optional
+record-level rules. Results retain findings, denominators, measures and
+dimension scores. A cleaning log records review decisions, and reassessment
+evaluates the resulting snapshot.
 }
+\section{Start an assessment}{
+
+Use \code{\link[=assess]{assess()}} with a data frame. Review a specification created by
+\code{\link[=infer_spec]{infer_spec()}}, or provide one through \code{\link[=spec_complete]{spec_complete()}} and \code{\link[=read_spec]{read_spec()}}.
+Read results with \code{\link[=issues]{issues()}}, \code{\link[=measures]{measures()}} and \code{\link[=scores]{scores()}}.
+}
+
+\section{Review and report}{
+
+\code{\link[=cleaning_log]{cleaning_log()}} and \code{\link[=apply_log]{apply_log()}} record and apply decisions.
+\code{\link[=compare_data]{compare_data()}} compares deliveries; \code{\link[=assess_tables]{assess_tables()}} assesses linked
+tables. \code{\link[=report]{report()}} and \code{\link[=write_results]{write_results()}} export results.
+}
+
+\section{Worked guide}{
+
+Run \code{vignette("qualitas", package = "qualitas")} for a complete synthetic
+workflow. The bundled CSV survey and its defects are generated test data.
+}
+
 \seealso{
 Useful links:
 \itemize{

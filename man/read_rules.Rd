@@ -7,18 +7,17 @@
 read_rules(x)
 }
 \arguments{
-\item{x}{A path to a CSV file, a data frame with `rule_id`, `expression`
-and `description`, or a named character vector of expressions.}
+\item{x}{A path to a CSV file, a data frame with \code{rule_id}, \code{expression}
+and \code{description}, or a named character vector of expressions.}
 }
 \value{
-A tibble with `rule_id`, `expression` and `description`.
+A tibble with \code{rule_id}, \code{expression} and \code{description}.
 }
 \description{
-A rule is an R expression that is `TRUE` for a valid record, such as
-`age >= 18`, `end_date >= start_date` or `if (pregnant == "yes") sex ==
-"female"` written as `pregnant != "yes" | sex == "female"`. Rules are kept
-as data, in a CSV file or a table with the columns `rule_id`,
-`expression` and `description`, so they can be reviewed and versioned
+A rule is an R expression that is \code{TRUE} for a valid record, such as
+\code{age >= 18}, \code{end_date >= start_date} or \code{if (pregnant == "yes") sex == "female"} written as \code{pregnant != "yes" | sex == "female"}. Rules are kept
+as data, in a CSV file or a table with the columns \code{rule_id},
+\code{expression} and \code{description}, so they can be reviewed and versioned
 apart from the code, as in the validate package (van der Loo and de Jonge
 2021).
 }

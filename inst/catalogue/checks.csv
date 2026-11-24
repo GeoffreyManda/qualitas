@@ -1,10 +1,11 @@
 check_id,function,title,dimension,iso25012,kahn,dataquier,unit,severity,source
 ST01,check_empty_columns,Column holds no values,structure,Completeness,Completeness,Integrity: structural data set error,column,major,Schmidt et al. 2021
 ST02,check_constant_columns,Column holds one value only,structure,Accuracy,Plausibility: atemporal,Accuracy: unexpected distributions,column,minor,Batini and Scannapieco 2016
-ST03,check_column_names,"Column name is missing, repeated or not syntactic",structure,Compliance,Conformance: value,Integrity: structural data set error,column,minor,Frictionless Table Schema v1
+ST03,check_column_names,"Column name is missing, repeated, padded with spaces or broken across lines",structure,Compliance,Conformance: value,Integrity: structural data set error,column,minor,Frictionless Table Schema v1
 ST04,check_declared_columns,Column declared in the specification is absent or column present but undeclared,structure,Compliance,Conformance: relational,Integrity: structural data set error,column,major,ISO 8000-110
 ST05,check_type_conformance,Value does not have the declared type,validity,Compliance,Conformance: value,Integrity: value format,cell,major,ISO/IEC 25012; Kahn et al. 2016
 ST06,check_encoding,Text is not valid UTF-8,structure,Compliance,Conformance: value,Integrity: value format,cell,major,"Unicode Standard; RFC 3629 (UTF-8)"
+ST07,check_row_alignment,Record's values do not match their columns' usual kinds,structure,Consistency,Conformance: relational,Integrity: structural data set error,record,major,Kahn et al. 2016
 CO01,check_missing_cells,Value is missing,completeness,Completeness,Completeness,Completeness: crude missingness,cell,minor,Pipino et al. 2002
 CO02,check_required_missing,Required value is missing,completeness,Completeness,Completeness,Completeness: item missingness,cell,major,Kahn et al. 2016
 CO03,check_disguised_missing,Value is a code or placeholder that stands for missing,completeness,Completeness,Conformance: value,Completeness: qualified missingness,cell,major,Schmidt et al. 2021
@@ -29,9 +30,10 @@ TI02,check_period_gaps,Expected period has no records,timeliness,Completeness,Co
 FA01,check_digit_preference,Terminal digits are not uniformly distributed,fabrication,Credibility,Plausibility: atemporal,Accuracy: end digit preferences,column,minor,Judge and Schechter 2009
 FA02,check_age_heaping,Ages heap on multiples of five (Whipple index),fabrication,Accuracy,Plausibility: atemporal,Accuracy: end digit preferences,column,minor,United Nations Demographic Yearbook
 FA03,check_benford,First digits depart from Benford's law,fabrication,Credibility,Plausibility: atemporal,,column,minor,Nigrini 2012; Judge and Schechter 2009
-FA04,check_short_duration,Interview duration is implausibly short,fabrication,Credibility,Plausibility: temporal,,record,major,IPA high-frequency checks
+FA04,check_short_duration,Interview duration is implausibly short or long,fabrication,Credibility,Plausibility: temporal,,record,major,IPA high-frequency checks
 FA05,check_straightlining,Record gives the same answer to every item of a block,fabrication,Credibility,Plausibility: atemporal,,record,minor,Groves and Lyberg 2010
 FA06,check_enumerator_effects,Enumerator's records differ markedly from the others',fabrication,Credibility,Plausibility: atemporal,Accuracy: examiner effects,record,major,Schmidt et al. 2021
+FA07,check_interview_hours,Interview starts or ends outside the working hours,fabrication,Credibility,Plausibility: temporal,,record,major,IPA high-frequency checks
 PI01,check_pii_values,Value looks like personal data (e-mail address or phone number),confidentiality,Confidentiality,,,cell,critical,ISO/IEC 25012
 PI02,check_pii_columns,Column name suggests personal data,confidentiality,Confidentiality,,,column,major,ISO/IEC 25012
 DO01,check_documentation,Column has no description in the specification,documentation,Understandability,,,column,minor,Gebru et al. 2021; Wilkinson et al. 2016

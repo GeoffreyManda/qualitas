@@ -27,7 +27,7 @@ infer_spec <- function(data, key_share = 0.95) {
     # A name such as "time" or "protime" suggests a date only when the
     # values are dates or the name says so.
     dplyr::mutate(role = dplyr::if_else(
-      .data$role == "date" & !.data$type %in% c("date", "datetime") &
+      .data$role %in% c("date", "start", "end") & !.data$type %in% c("date", "datetime") &
         !grepl("date", tolower(.data$column)), "", .data$role)) |>
     dplyr::mutate(
       # An identifier is a key when nearly all its values differ; one that
@@ -61,29 +61,8 @@ infer_type <- function(x) {
     is.factor(x) ~ "category",
     whole ~ "integer",
     numeric_text ~ "number",
-    length(text) > 0 && all(is_iso_date(text)) ~ "date",
+    reads_as_dates(text) ~ "date",
     distinct > 0 && distinct <= max(10, length(text) * 0.05) ~ "category",
     .default = "text"
-  )
-}
-
-# Whether text values are dates written year-month-day.
-is_iso_date <- function(text) {
-  grepl("^\\d{4}-\\d{2}-\\d{2}", text) & !is.na(as_day(text))
-}
-
-# The role of each column, guessed from its name: an identifier, a date, the
-# enumerator or interviewer, a grouping place, an age or an interview
-# duration; "" for any other column.
-infer_role <- function(names) {
-  name <- tolower(names)
-  dplyr::case_when(
-    grepl("(^|_)(id|uuid|key|code)$|^id_|^uuid", name) ~ "id",
-    grepl("enumerator|interviewer|surveyor|collector|^enum", name) ~ "enumerator",
-    grepl("interview.*(duration|length|time)|(duration|length)_?min|minutes", name) ~ "duration",
-    grepl("^age($|_)|_age$", name) ~ "age",
-    grepl("date|time$|_at$|^start|^end|submission", name) ~ "date",
-    grepl("region|district|province|state|site|facility|village|county|ward", name) ~ "group",
-    .default = ""
   )
 }

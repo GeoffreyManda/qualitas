@@ -19,20 +19,20 @@ check_rules(data, spec, options)
 \arguments{
 \item{data}{A data frame.}
 
-\item{spec}{A specification (see [spec_template()]).}
+\item{spec}{A specification (see \code{\link[=spec_template]{spec_template()}}).}
 
-\item{options}{Settings from [qualitas_options()].}
+\item{options}{Settings from \code{\link[=qualitas_options]{qualitas_options()}}.}
 }
 \value{
-A [check_result()].
+A \code{\link[=check_result]{check_result()}}.
 }
 \description{
-`check_rules()` applies the rules given to [assess()] (see
-[read_rules()]). `check_label_variants()` finds values of a text or
+\code{check_rules()} applies the rules given to \code{\link[=assess]{assess()}} (see
+\code{\link[=read_rules]{read_rules()}}). \code{check_label_variants()} finds values of a text or
 category column that become the same label once case, spaces and
 punctuation are set aside ("Male", "male ", "MALE"); every variant other
-than the most frequent is flagged. `check_mixed_types()` flags the text
-values of a column in which at least `mixed_type_share` of the filled
+than the most frequent is flagged. \code{check_mixed_types()} flags the text
+values of a column in which at least \code{mixed_type_share} of the filled
 values are numbers.
 }
 \examples{
