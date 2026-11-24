@@ -1,0 +1,3 @@
+rule_id,expression,description
+consented,"consent == ""yes""",only consenting respondents are interviewed
+adult,as.numeric(age_years) >= 18,respondents are adults

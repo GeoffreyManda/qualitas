@@ -1,0 +1,48 @@
+Package: qualitas
+Type: Package
+Title: General Data Quality Assessment with Rules, Scores and Reports
+Version: 0.1.0
+Authors@R:
+    person("Geoffrey", "Manda", role = c("aut", "cre"),
+           email = "geofmanda@gmail.com", comment = c(ORCID = "0000-0001-8104-5021"))
+Description: Assesses the quality of any rectangular data set against a
+    data specification that can be inferred from the data or written by the
+    user. More than thirty checks cover structure, completeness, uniqueness,
+    validity, consistency, plausibility, relational integrity, timeliness,
+    fabrication and confidentiality. Each check is mapped to ISO/IEC 25012,
+    the harmonised terminology of Kahn et al. (2016) <doi:10.13063/2327-9214.1244>
+    and the framework of Schmidt et al. (2021) <doi:10.1186/s12874-021-01252-7>.
+    Every finding is reported with its row, column and value; every measure
+    as a numerator, a denominator and a ratio in the form of Pipino, Lee and
+    Wang (2002) <doi:10.1145/505248.506010>. Results feed a cleaning log
+    that can be applied and re-assessed, and are written as an HTML or Word
+    report, a JSON file or tidy tables.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Language: en-GB
+Depends:
+    R (>= 4.1.0)
+Imports:
+    cli,
+    dplyr (>= 1.1.0),
+    jsonlite,
+    purrr (>= 1.0.0),
+    readr,
+    rlang (>= 1.1.0),
+    stats,
+    stringr,
+    tibble,
+    tidyr,
+    tools,
+    utils
+Suggests:
+    flextable,
+    officer,
+    survival,
+    testthat (>= 3.0.0),
+    withr,
+    yaml
+Config/testthat/edition: 3
+URL: https://github.com/GeoffreyManda/qualitas
+BugReports: https://github.com/GeoffreyManda/qualitas/issues
+Config/roxygen2/version: 8.0.0

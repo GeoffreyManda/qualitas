@@ -1,0 +1,8 @@
+bibentry(
+  bibtype = "Manual",
+  title = "qualitas: General-Purpose Data Quality Assessment",
+  author = person("Geoffrey", "Manda", comment = c(ORCID = "0000-0001-8104-5021")),
+  year = "2026",
+  note = "R package version 0.1.0",
+  url = "https://github.com/GeoffreyManda/qualitas"
+)

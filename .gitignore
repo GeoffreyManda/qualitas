@@ -1,0 +1,9 @@
+.claude/
+.Rproj.user/
+.Rhistory
+.RData
+.DS_Store
+docs/
+*.Rcheck/
+qualitas_*.tar.gz
+plan.md

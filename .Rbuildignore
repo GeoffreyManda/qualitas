@@ -1,0 +1,7 @@
+^\.claude$
+^repo-manifest\.yaml$
+^qualitas\.Rproj$
+^\.Rproj\.user$
+^\.github$
+^\.lintr$
+^plan\.md$
