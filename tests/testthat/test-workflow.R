@@ -46,11 +46,13 @@ test_that("linked tables are assessed with their keys", {
   households <- data.frame(hh_id = c("h1", "h2"))
   members <- data.frame(member_id = 1:3, hh_id = c("h1", "h2", "h9"))
   links <- data.frame(from = "members", column = "hh_id", table = "households", key = "hh_id")
-  results <- assess_tables(list(households = households, members = members),
-                           relations = links, checks = "IN01")
+  expect_no_warning(
+    results <- assess_tables(list(households = households, members = members),
+                             relations = links, checks = "IN01"))
   expect_s3_class(results, "qualitas_assessments")
   expect_equal(issues(results$members)$row, 3)
   expect_equal(nrow(issues(results$households)), 0)
+  expect_equal(nrow(scores(results$households)), 0)
 })
 
 test_that("reports and results are written", {

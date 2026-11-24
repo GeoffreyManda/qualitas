@@ -43,7 +43,7 @@ score_dimensions <- function(measures) {
     dplyr::mutate(weight = unname(severity_weights()[.data$severity])) |>
     dplyr::summarise(checks = dplyr::n(),
                      checks_with_issues = sum(.data$flagged > 0),
-                     lowest = min(.data$score),
+                     lowest = if (length(.data$score)) min(.data$score) else NA_real_,
                      score = stats::weighted.mean(.data$score, .data$weight),
                      .by = "dimension") |>
     dplyr::relocate("lowest", .after = "score") |>
