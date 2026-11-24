@@ -37,7 +37,9 @@ jobs:
           use-public-rspm: true
       - uses: r-lib/actions/setup-tinytex@v2
       - name: Install reference-manual fonts and indexer
-        run: tlmgr install courier makeindex
+        shell: bash
+        timeout-minutes: 5
+        run: tlmgr --repository https://ctan.math.illinois.edu/systems/texlive/tlnet install courier makeindex
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
