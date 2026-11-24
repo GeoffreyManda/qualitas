@@ -38,6 +38,8 @@ jobs:
       - uses: r-lib/actions/setup-tinytex@v2
       - name: Install reference-manual fonts and indexer
         shell: bash
+        env:
+          TEXLIVE_PREFER_OWN: 1
         timeout-minutes: 5
         run: tlmgr --repository https://ctan.math.illinois.edu/systems/texlive/tlnet install courier makeindex
       - uses: r-lib/actions/setup-r-dependencies@v2
