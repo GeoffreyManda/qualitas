@@ -1,6 +1,6 @@
 ---
 name: qualitas
-description: Assess whether a data set is fit for use with the R package qualitas, which runs 36 checks in eleven dimensions against a specification and reports issues, measures and scores. Use when asked to check, audit, profile or clean a data set.
+description: Assess whether a data set is fit for use with the R package qualitas, which runs 38 checks in eleven dimensions against a specification and reports issues, measures and scores. Use when asked to check, audit, profile or clean a data set.
 ---
 
 # Data quality assessment with qualitas
@@ -22,7 +22,7 @@ Use qualitas when a person asks whether a data set is fit for use, or asks you t
 - A measure gives the units checked, the units flagged and the score 1 - flagged / checked; report all three, with the unit.
 - A check whose status is `not applicable` examined nothing. Say so, and do not count it as passed.
 - A check whose status is `error` could not run; report its message.
-- Treat the fabrication checks, FA01 to FA06, as signs to follow up with the field team.
+- Treat the fabrication checks, FA01 to FA07, as signs to follow up with the field team.
 - Results against an inferred specification are provisional until a person has reviewed the specification.
 - Remove or mask personal data found by PI01 or PI02 before results are shared.
 
@@ -31,6 +31,7 @@ Use qualitas when a person asks whether a data set is fit for use, or asks you t
 - `as_of`: the date the data are judged against, used for future dates and currentness.
 - `max_age_days` and `period`: set them to check timeliness.
 - `outlier_z` (3.5), `group_min_n` (10) and `min_duration`: adjust them to the data at hand.
+- `working_hours` and `longest_interview`: set them, for example `c("07:00", "19:00")` and 180 minutes, to check when interviews took place and how long they lasted.
 - Give a column the role `amount` in the specification to test it against Benford's law; no column is tested otherwise.
 - `missing_codes`: add the codes the questionnaire uses for answers such as "don't know" or "refused".
 

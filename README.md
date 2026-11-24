@@ -1,6 +1,6 @@
 # qualitas
 
-qualitas assesses the quality of a data set in R. You describe what the data should hold, or let the package infer it; `assess()` runs 36 checks and returns every problem with its row, column and value, a measure for each check and a score for each of eleven dimensions. Each check is mapped to ISO/IEC 25012, to the harmonised framework of Kahn et al. (2016) and to dataquieR (Schmidt et al. 2021). A cleaning log records what is done about each problem. Reports can be written in four formats: HTML, Word, CSV and JSON.
+qualitas assesses the quality of a data set in R. You describe what the data should hold, or let the package infer it; `assess()` runs 38 checks and returns every problem with its row, column and value, a measure for each check and a score for each of eleven dimensions. Each check is mapped to ISO/IEC 25012, to the harmonised framework of Kahn et al. (2016) and to dataquieR (Schmidt et al. 2021). A cleaning log records what is done about each problem. Reports can be written in four formats: HTML, Word, CSV and JSON.
 
 ## Installation
 
@@ -31,7 +31,7 @@ scores(result)
 #> 5      uniqueness      3                  2 0.993  0.987
 #> 6     consistency      4                  3 0.996  0.990
 #> 7        validity      4                  4 0.998  0.997
-#> 8       structure      5                  0 1.000  1.000
+#> 8       structure      6                  0 1.000  1.000
 #> 9   documentation      1                  0 1.000  1.000
 ```
 
@@ -47,7 +47,7 @@ The Benford test does not apply here, because no column is declared an amount.
 
 | Dimension | Checks | What they find |
 |---|---|---|
-| structure | ST01 to ST06 | empty, constant or badly named columns; columns missing from the data or the specification; values that break the declared type; text that is invalid UTF-8 |
+| structure | ST01 to ST07 | empty, constant or badly named columns; columns missing from the data or the specification; values that break the declared type; text that is invalid UTF-8; records whose values sit under the wrong headers |
 | completeness | CO01 to CO04 | missing values, missing required values, codes such as -99 that stand for a missing value, records missing most values |
 | uniqueness | UN01 to UN03 | repeated records, repeated keys, records that match another on nearly all values |
 | validity | VA01 to VA04 | values outside the allowed list, outside the range, not matching a pattern, or dated after the assessment |
@@ -55,7 +55,7 @@ The Benford test does not apply here, because no column is declared an amount.
 | plausibility | PL01 to PL03 | outliers in a column or within a group, dates before the date they must follow |
 | integrity | IN01 | keys that match no record of a linked table |
 | timeliness | TI01 to TI02 | data older than allowed, periods without records |
-| fabrication | FA01 to FA06 | last-digit preference, age heaping, departures from Benford's law in declared amounts, short interviews, straightlining, enumerators whose records differ |
+| fabrication | FA01 to FA07 | last-digit preference, age heaping, departures from Benford's law in declared amounts, interviews too short or too long, straightlining, enumerators whose records differ, interviews outside the working hours |
 | confidentiality | PI01 to PI02 | e-mail addresses and telephone numbers in values; column names that suggest personal data |
 | documentation | DO01 | columns the specification does not describe |
 
@@ -63,7 +63,7 @@ The Benford test does not apply here, because no column is declared an amount.
 
 ## Specifications
 
-A specification has one row per column: its type (`integer`, `number`, `date`, `datetime`, `logical`, `category`, `text`), its role (`id`, `date`, `enumerator`, `group`, `age`, `duration`, `amount`), whether it is required and unique, its minimum and maximum, its allowed values separated by `;`, a pattern, its own missing-value codes, a description and the column whose date it must follow.
+A specification has one row per column: its type (`integer`, `number`, `date`, `datetime`, `logical`, `category`, `text`), its role (`id`, `date`, `enumerator`, `group`, `age`, `duration`, `start`, `end`, `amount`), whether it is required and unique, its minimum and maximum, its allowed values separated by `;`, a pattern, its own missing-value codes, a description and the column whose date it must follow.
 
 ```r
 spec <- infer_spec(survey)    # a first draft from the data

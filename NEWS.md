@@ -2,7 +2,7 @@
 
 First release.
 
-* `assess()` runs 36 checks in eleven dimensions against a data specification.
+* `assess()` runs 38 checks in eleven dimensions against a data specification.
 * A specification can be written by hand, read from a CSV or YAML file, or inferred with `infer_spec()`.
 * Each check is mapped to ISO/IEC 25012, Kahn et al. (2016) and dataquieR; it reports the units it examined, the units it flagged and the share that passed.
 * Dimension scores weight checks by severity.
