@@ -4,8 +4,10 @@
 #' @rdname digit_checks
 #' @export
 check_benford <- function(data, spec, options) {
-  measured <- measured_columns(spec, data)
-  tested <- purrr::map(measured, \(column) benford_test(data[[column]], column, options)) |>
+  # Benford's law describes amounts that grow by multiplication, such as
+  # payments or populations; it is tested only on columns declared as amounts.
+  amounts <- columns_with_role(spec, data, "amount")
+  tested <- purrr::map(amounts, \(column) benford_test(data[[column]], column, options)) |>
     purrr::compact()
   check_result(dplyr::bind_rows(purrr::list_rbind(tested), no_issues()), checked = length(tested))
 }

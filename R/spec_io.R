@@ -4,7 +4,9 @@
 #' * `column`: the column name.
 #' * `type`: `integer`, `number`, `date`, `datetime`, `logical`, `category`
 #'   or `text`.
-#' * `role`: `id`, `date`, `enumerator`, `group`, `age`, `duration` or `""`.
+#' * `role`: `id`, `date`, `enumerator`, `group`, `age`, `duration`,
+#'   `amount` (a sum of money or another quantity Benford's law applies to)
+#'   or `""`.
 #' * `required`: whether every record must have a value.
 #' * `unique`: whether every value must be different (a key).
 #' * `min`, `max`: the allowed range, for numbers and dates.

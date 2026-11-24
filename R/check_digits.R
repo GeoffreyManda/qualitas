@@ -9,18 +9,23 @@
 #' column are uniform, with a chi-square test on nine degrees of freedom, and
 #' reports the digit preference score of the SMART methodology,
 #' 100 sqrt(chi-square / (n x 9)), where 0 means no preference. A column is
-#' flagged when the p-value is below `digit_p`, with at least `digit_min_n`
-#' values covering at least `digit_min_range` steps of the last recorded
-#' place (values of 1 to 12 end in 1 and 2 more often by nature). The
+#' flagged when the p-value is below `digit_p` and the score above
+#' `digit_score_max` (20, the band SMART calls problematic), with at least
+#' `digit_min_n` values whose middle half spans at least `digit_min_iqr`
+#' steps of the recorded place (values of 1 to 12 end in 1 and 2 more often
+#' by nature). Values recorded in tens are read one place up, and values
+#' recorded in fives are not tested. The
 #' recorded place is the number of decimals most values carry; columns
 #' recorded to more than `digit_max_places` decimals are computed values
 #' and are not tested.
 #' `check_age_heaping()` computes the Whipple index over ages 23 to
 #' 62 of each column whose role is `age`: 100 means no heaping on ages
 #' ending in 0 or 5, 500 means every age ends in 0 or 5. `check_benford()`
-#' compares the first digits of a positive column spanning at least two
-#' orders of magnitude with Benford's law, by mean absolute deviation
-#' (Nigrini 2012). A column too small or too narrow for a test is not
+#' compares the first digits of each column whose role is `amount`, positive
+#' and spanning at least two orders of magnitude, with Benford's law, by mean
+#' absolute deviation (Nigrini 2012); the law holds for amounts such as
+#' payments, not for measurements, counts or identifiers, so no column is
+#' tested unless the specification declares it. A column too small or too narrow for a test is not
 #' counted as checked.
 #'
 #' @inheritParams structure_checks
@@ -54,39 +59,26 @@ digit_test <- function(x, column, options) {
   places <- as.integer(names(which.max(table(decimals))))
   if (places > options$digit_max_places) return(NULL)
   steps <- round(abs(value) * 10^places)
+  # Values recorded in tens (SAT scores, prices in whole tens) are read one
+  # place up; values recorded in fives (wind in 5-knot steps) follow a
+  # convention and are not tested.
+  tens <- purrr::map_lgl(1:3, \(k) mean(steps %% 10^k == 0) >= options$digit_coarse_share)
+  steps <- steps / 10^sum(cumprod(tens))
+  if (mean(steps %% 5 == 0) >= options$digit_coarse_share) return(NULL)
   last <- as.character(steps %% 10)
-  # The last digit carries a preference only when the values cover many of
-  # its cycles: at least `digit_min_range` steps of the last recorded place.
-  cycles <- max(steps) - min(steps)
-  if (cycles < options$digit_min_range) return(NULL)
+  # The last digit carries a preference only when the middle half of the
+  # values spans at least `digit_min_iqr` steps; small counts piled up near
+  # zero end in low digits by nature.
+  if (diff(stats::quantile(steps, c(0.25, 0.75), names = FALSE)) < options$digit_min_iqr) {
+    return(NULL)
+  }
   observed <- table(factor(last, levels = 0:9))
   expected <- length(last) / 10
   chi <- sum((observed - expected)^2 / expected)
   p <- stats::pchisq(chi, df = 9, lower.tail = FALSE)
-  if (p >= options$digit_p) return(no_issues())
-  tibble::tibble(column = column,
-                 value = sprintf("score %.1f", 100 * sqrt(chi / (length(last) * 9))),
+  score <- 100 * sqrt(chi / (length(last) * 9))
+  if (p >= options$digit_p || score <= options$digit_score_max) return(no_issues())
+  tibble::tibble(column = column, value = sprintf("score %.1f", score),
                  message = sprintf("last digits are not uniform (p %s); most often %s",
                                    format.pval(p, digits = 2), names(which.max(observed))))
-}
-
-#' @rdname digit_checks
-#' @export
-check_age_heaping <- function(data, spec, options) {
-  ages <- columns_with_role(spec, data, "age")
-  tested <- purrr::map(ages, \(column) whipple_test(data[[column]], column, options)) |>
-    purrr::compact()
-  check_result(dplyr::bind_rows(purrr::list_rbind(tested), no_issues()), checked = length(tested))
-}
-
-# The Whipple index of one age column: an issue above the limit, NULL when
-# too few ages fall between 23 and 62.
-whipple_test <- function(x, column, options) {
-  age <- as_number(x)
-  adult <- age[!is.na(age) & age >= 23 & age <= 62 & age %% 1 == 0]
-  if (length(adult) < options$digit_min_n) return(NULL)
-  whipple <- 100 * sum(adult %% 5 == 0) / (length(adult) / 5)
-  if (whipple <= options$whipple_max) return(no_issues())
-  tibble::tibble(column = column, value = sprintf("Whipple %.0f", whipple),
-                 message = "ages heap on numbers ending in 0 or 5")
 }

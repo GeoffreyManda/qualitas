@@ -63,6 +63,10 @@
     },
     "plan.md": {
       "role": "qualitas plan: objective, steps, writing plan and authoring bindings (internal, not tracked by git, not built)"
+    },
+    "inst/benchmark/**": {
+      "role": "Benchmark: assesses a random sample of public data sets from the Rdatasets archive and records errors, timing and flag rates",
+      "phase": "package-benchmark"
     }
   },
   "governance": {
@@ -71,7 +75,8 @@
         "package-code": "R/",
         "package-test": "tests/testthat/",
         "package-test-runner": "tests/testthat.R",
-        "package-cli": "inst/bin/"
+        "package-cli": "inst/bin/",
+        "package-benchmark": "inst/benchmark/"
       }
     }
   }

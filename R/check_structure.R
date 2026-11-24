@@ -1,6 +1,7 @@
 # Checks of the structure of the data: columns that are empty, constant,
-# badly named, missing from the data or missing from the specification, and
-# values that do not have their declared type.
+# badly named, missing from the data or missing from the specification,
+# values that do not have their declared type, and text that is not valid
+# UTF-8 (check_encoding.R).
 
 #' Checks of structure and type
 #'

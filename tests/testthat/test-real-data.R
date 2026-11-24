@@ -20,9 +20,11 @@ test_that("last digits are read at the precision most values carry", {
   data <- survival::pbc
   found <- check_digit_preference(data, infer_spec(data), qualitas_options())$issues
   # alk.phos is whole numbers with a few decimals; age is computed to four
-  # decimals; cholesterol ends in an even digit 193 times in 284.
-  expect_false(any(c("alk.phos", "age") %in% found$column))
-  expect_true("chol" %in% found$column)
+  # decimals. AST ends in .x0 or .x5 in 287 of 312 values (score 61.5);
+  # cholesterol prefers even digits (score 13.2), within the band SMART
+  # calls acceptable.
+  expect_false(any(c("alk.phos", "age", "chol") %in% found$column))
+  expect_true("ast" %in% found$column)
 })
 
 test_that("skewed laboratory values are judged on the log scale", {
@@ -48,4 +50,37 @@ test_that("a long tail on one side does not hide or invent outliers", {
   pressure <- as.numeric(found$value[found$column == "pressure"])
   expect_true(all(pressure < stats::median(data$pressure)))
   expect_lt(length(pressure), 0.02 * nrow(data))
+})
+
+test_that("the benchmark's false alarms stay fixed", {
+  # A repeated identifier groups records in panel data; it is not a key.
+  panel <- data.frame(school_id = rep(1:50, each = 4), year = rep(2001:2004, 50),
+                      score = seq_len(200))
+  expect_false(infer_spec(panel)$unique[1])
+  # Values recorded in fives follow a convention.
+  winds <- data.frame(wind = rep(seq(10, 160, by = 5), length.out = 400))
+  expect_equal(check_digit_preference(winds, infer_spec(winds), qualitas_options())$checked, 0)
+  # Benford's law is tested only on declared amounts.
+  spend <- data.frame(paid = round(exp(seq(1, 12, length.out = 1500)), 2))
+  expect_equal(check_benford(spend, infer_spec(spend), qualitas_options())$checked, 0)
+  declared <- spec_complete(tibble::tibble(column = "paid", type = "number", role = "amount"))
+  expect_equal(check_benford(spend, declared, qualitas_options())$checked, 1)
+  # An order identifier is not a telephone number.
+  orders <- data.frame(id = sprintf("2015-%06d", 1:30), item = "pizza")
+  expect_equal(nrow(check_pii_values(orders, infer_spec(orders), qualitas_options())$issues), 0)
+  # A policy's duration in years is not an interview's length.
+  expect_equal(infer_role(c("duration", "interview_duration", "duration_min")),
+               c("", "duration", "duration"))
+})
+
+test_that("text that is not valid UTF-8 is reported, not fatal", {
+  # bayesrules::book_banning holds titles in Latin-1, which stopped the first
+  # benchmark run.
+  latin <- c("caf\xe9 society", "plain title", "na\xefve reader", "plain title")
+  data <- data.frame(title = latin, pages = c(120, 200, 340, 200))
+  result <- suppressMessages(assess(data, name = "titles"))
+  expect_false(any(measures(result)$status == "error"))
+  found <- issues(result)
+  expect_equal(found$row[found$check_id == "ST06"], c(1, 3))
+  expect_equal(as_text(latin)[1], "caf\u00e9 society")
 })

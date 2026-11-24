@@ -4,10 +4,14 @@
 \alias{infer_spec}
 \title{Infer a data specification from the data}
 \usage{
-infer_spec(data)
+infer_spec(data, key_share = 0.95)
 }
 \arguments{
 \item{data}{A data frame.}
+
+\item{key_share}{Share of distinct values from which an identifier column
+is taken as a unique key (0.95); below it, a repeated identifier groups
+records, as in data with one row per person and year.}
 }
 \value{
 A specification: a tibble with one row per column and the columns
@@ -18,7 +22,8 @@ A specification: a tibble with one row per column and the columns
 \description{
 Reads each column and writes one row of the specification: its type, its
 role (identifier, date, enumerator, group, age or duration, guessed from
-the column name), whether it is required and unique (identifiers are), and, for factors, its
+the column name), whether it is required and unique (identifiers whose values nearly all
+differ are), and, for factors, its
 allowed values. Ranges, patterns and descriptions are left empty for the
 user to fill in; an inferred specification describes the data as found
 and should be reviewed before it is trusted.

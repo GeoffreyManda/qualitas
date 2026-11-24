@@ -18,8 +18,12 @@
 #'     near duplicates (0.95; Kuriakose and Robbins 2016 used 0.85).
 #'   * `digit_p`: p-value below which terminal digits are not uniform (0.001).
 #'   * `digit_min_n`: fewest values for the terminal-digit test (50).
-#'   * `digit_min_range`: fewest steps of the last recorded place the values
-#'     must span for the terminal-digit test (50).
+#'   * `digit_min_iqr`: fewest steps of the recorded place the middle half of
+#'     the values must span for the terminal-digit test (20).
+#'   * `digit_score_max`: digit preference score above which last digits are
+#'     flagged (20, problematic in the SMART methodology).
+#'   * `digit_coarse_share`: share of values that must be multiples of 10 (or
+#'     5) for a column to be read as recorded in tens (or fives) (0.95).
 #'   * `digit_max_places`: most decimals a column may carry for the
 #'     terminal-digit test; more show a computed value (2).
 #'   * `benford_mad`: mean absolute deviation of first digits beyond which a
@@ -61,7 +65,9 @@ qualitas_options <- function(...) {
     missing_codes = c("NA", "N/A", "n/a", "na", "NULL", "null", "-", "--", ".", "?",
                       "none", "None", "unknown", "Unknown", "-99", "-999", "9999", "-9"),
     record_missing_share = 0.5, outlier_z = 3.5, group_min_n = 10L,
-    near_duplicate_share = 0.95, digit_p = 0.001, digit_min_n = 50L, digit_min_range = 50,
+    near_duplicate_share = 0.95, digit_p = 0.001, digit_min_n = 50L, digit_min_iqr = 20,
+    digit_score_max = 20,
+    digit_coarse_share = 0.95,
     digit_max_places = 2L, log_skew_min = 0.2,
     benford_mad = 0.015, benford_min_n = 1000L, whipple_max = 110,
     mixed_type_share = 0.8, min_duration = NA_real_, short_duration_share = 1 / 3,

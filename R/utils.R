@@ -17,17 +17,26 @@ columns_with_role <- function(spec, data, roles) {
   spec_present(spec, data)$column[spec_present(spec, data)$role %in% roles]
 }
 
-# A column's values as text, with missing values kept missing.
+# A column's values as text, with missing values kept missing. Text that is
+# not valid UTF-8 is read as Latin-1, the most common other encoding, so
+# that no check fails on it (check_encoding() reports it).
 as_text <- function(x) {
-  text <- as.character(x)
+  text <- utf8_text(as.character(x))
   dplyr::if_else(is.na(x), NA_character_, text)
+}
+
+# Text with any value that is not valid UTF-8 converted from Latin-1.
+utf8_text <- function(text) {
+  valid <- is.na(text) | validUTF8(text)
+  if (all(valid)) return(text)
+  dplyr::if_else(valid, text, iconv(text, from = "latin1", to = "UTF-8"))
 }
 
 # A column's values as numbers; text that does not read as a number is
 # missing. Only text written as a number is converted, so nothing warns.
 as_number <- function(x) {
   if (is.numeric(x)) return(as.numeric(x))
-  text <- trimws(as.character(x))
+  text <- trimws(utf8_text(as.character(x)))
   readable <- grepl("^[-+]?(\\d+\\.?\\d*|\\.\\d+)([eE][-+]?\\d+)?$", text)
   dplyr::if_else(readable, as.numeric(dplyr::if_else(readable, text, "0")), NA_real_)
 }
@@ -38,7 +47,7 @@ as_day <- function(x) {
   if (inherits(x, "POSIXt")) return(as.Date(x))
   # Each value is read on its own as year-month-day, so one bad value does
   # not stop the others from being read.
-  as.Date(substr(as.character(x), 1, 10), format = "%Y-%m-%d")
+  as.Date(substr(utf8_text(as.character(x)), 1, 10), format = "%Y-%m-%d")
 }
 
 # Whether each value is truly missing: NA, or text that is empty or blank.

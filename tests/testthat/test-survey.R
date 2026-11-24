@@ -52,7 +52,9 @@ test_that("outliers and signs of made-up data are found", {
   expect_equal(found_rows(result, "FA04"), 80:87)
   expect_equal(found_rows(result, "FA05"), 90:99)
   found <- issues(result)
-  expect_setequal(found$column[found$check_id == "FA01"], c("age_years", "weight_kg"))
+  # Heaped ages score 28.4; one enumerator's whole-number weights score
+  # 16.9, below the problematic band of 20.
+  expect_equal(found$column[found$check_id == "FA01"], "age_years")
   expect_equal(found$column[found$check_id == "FA02"], "age_years")
   expect_equal(found$value[found$check_id == "FA06"], "E6")
 })

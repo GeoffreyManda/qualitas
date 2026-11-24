@@ -25,7 +25,9 @@ NULL
 #' @rdname privacy_checks
 #' @export
 check_pii_values <- function(data, spec, options) {
-  texts <- columns_typed(spec, data, c("text", "category"))
+  # Identifiers and dates such as 2015-000001 are not telephone numbers.
+  texts <- setdiff(columns_typed(spec, data, c("text", "category")),
+                   columns_with_role(spec, data, c("id", "date")))
   found <- purrr::imap(data, \(x, column) {
     text <- trimws(as_text(x))
     email <- grepl(options$email_pattern, text, perl = TRUE)

@@ -1,6 +1,6 @@
 ---
 name: qualitas
-description: Assess whether a data set is fit for use with the R package qualitas, which runs 35 checks in eleven dimensions against a specification and reports issues, measures and scores. Use when asked to check, audit, profile or clean a data set.
+description: Assess whether a data set is fit for use with the R package qualitas, which runs 36 checks in eleven dimensions against a specification and reports issues, measures and scores. Use when asked to check, audit, profile or clean a data set.
 ---
 
 # Data quality assessment with qualitas
@@ -31,6 +31,7 @@ Use qualitas when a person asks whether a data set is fit for use, or asks you t
 - `as_of`: the date the data are judged against, used for future dates and currentness.
 - `max_age_days` and `period`: set them to check timeliness.
 - `outlier_z` (3.5), `group_min_n` (10) and `min_duration`: adjust them to the data at hand.
+- Give a column the role `amount` in the specification to test it against Benford's law; no column is tested otherwise.
 - `missing_codes`: add the codes the questionnaire uses for answers such as "don't know" or "refused".
 
 ## Linked tables and repeated deliveries
