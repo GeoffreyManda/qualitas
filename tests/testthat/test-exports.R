@@ -50,5 +50,5 @@ test_that("dates and numbers are read value by value", {
   expect_equal(as_number(c(" 3 ", "1e3", "abc", "")), c(3, 1000, NA, NA))
   spec <- spec_complete(tibble::tibble(column = "visit", type = "date"))
   data <- data.frame(visit = c("bad", "2026-01-05", "2026-01-06"))
-  expect_equal(run(check_type_conformance, data, spec)$issues$row, 1)
+  expect_equal(check_type_conformance(data, spec, qualitas_options())$issues$row, 1)
 })
