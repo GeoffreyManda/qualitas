@@ -20,7 +20,7 @@ VA04,check_future_dates,Date lies after the assessment date,validity,Currentness
 CS01,check_rules,Record breaks a declared rule,consistency,Consistency,Conformance: computational,Consistency: contradictions,record,major,van der Loo and de Jonge 2021
 CS02,check_label_variants,Category is a spelling variant of another category,consistency,Consistency,Conformance: value,Consistency: inadmissible categorical values,cell,minor,Batini and Scannapieco 2016
 CS03,check_whitespace,Text value has leading or trailing spaces or repeated inner spaces,consistency,Compliance,Conformance: value,Integrity: value format,cell,minor,Frictionless Table Schema v1
-CS04,check_mixed_types,Column mixes numbers and text,consistency,Consistency,Conformance: value,Integrity: value format,column,major,Kahn et al. 2016
+CS04,check_mixed_types,Text value in a column of numbers,consistency,Consistency,Conformance: value,Integrity: value format,cell,major,Kahn et al. 2016
 PL01,check_outliers,Numeric value is an outlier by robust z-score,plausibility,Accuracy,Plausibility: atemporal,Accuracy: outliers,cell,minor,Iglewicz and Hoaglin 1993
 PL02,check_group_outliers,Numeric value is an outlier within its group,plausibility,Accuracy,Plausibility: atemporal,Accuracy: outliers,cell,minor,Iglewicz and Hoaglin 1993
 PL03,check_date_order,Dates of one record are out of their declared order,plausibility,Consistency,Plausibility: temporal,Consistency: contradictions,record,major,Kahn et al. 2016
@@ -32,7 +32,7 @@ FA02,check_age_heaping,Ages heap on multiples of five (Whipple index),fabricatio
 FA03,check_benford,First digits depart from Benford's law,fabrication,Credibility,Plausibility: atemporal,,column,minor,Nigrini 2012; Judge and Schechter 2009
 FA04,check_short_duration,Interview duration is implausibly short or long,fabrication,Credibility,Plausibility: temporal,,record,major,IPA high-frequency checks
 FA05,check_straightlining,Record gives the same answer to every item of a block,fabrication,Credibility,Plausibility: atemporal,,record,minor,Groves and Lyberg 2010
-FA06,check_enumerator_effects,Enumerator's records differ markedly from the others',fabrication,Credibility,Plausibility: atemporal,Accuracy: examiner effects,record,major,Schmidt et al. 2021
+FA06,check_enumerator_effects,Enumerator's records differ markedly from the others',fabrication,Credibility,Plausibility: atemporal,Accuracy: examiner effects,group,major,Schmidt et al. 2021
 FA07,check_interview_hours,Interview starts or ends outside the working hours,fabrication,Credibility,Plausibility: temporal,,record,major,IPA high-frequency checks
 PI01,check_pii_values,Value looks like personal data (e-mail address or phone number),confidentiality,Confidentiality,,,cell,critical,ISO/IEC 25012
 PI02,check_pii_columns,Column name suggests personal data,confidentiality,Confidentiality,,,column,major,ISO/IEC 25012

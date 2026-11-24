@@ -1,12 +1,14 @@
 # One measure per check, in the form of Pipino, Lee and Wang (2002): the units
 # the check examined, the units it flagged, and the share that passed
 # (1 - flagged / checked). A check that examined nothing does not apply; a
-# check that failed to run reports its error.
+# check that failed to run, in whole or in part, reports its error and has no
+# score.
 measure_checks <- function(catalogue, issues, results) {
   flagged <- issues |>
     dplyr::left_join(dplyr::select(catalogue, "check_id", "unit"), by = "check_id",
                      relationship = "many-to-one", na_matches = "never") |>
-    dplyr::summarise(flagged = flagged_units(.data$unit[1], .data$column, .data$row),
+    dplyr::summarise(flagged = flagged_units(.data$unit[1], .data$column, .data$row,
+                                             .data$value),
                      .by = "check_id")
   catalogue |>
     dplyr::mutate(checked = purrr::map_int(results, "checked"),
@@ -16,7 +18,8 @@ measure_checks <- function(catalogue, issues, results) {
     dplyr::mutate(
       flagged = dplyr::coalesce(.data$flagged, 0L),
       flagged = pmin(.data$flagged, .data$checked),
-      score = dplyr::if_else(.data$checked > 0, 1 - .data$flagged / .data$checked, NA_real_),
+      score = dplyr::if_else(.data$checked > 0 & is.na(.data$error),
+                             1 - .data$flagged / .data$checked, NA_real_),
       status = dplyr::case_when(!is.na(.data$error) ~ "error",
                                 .data$checked == 0 ~ "not applicable",
                                 .data$flagged == 0 ~ "passed",
@@ -28,10 +31,12 @@ measure_checks <- function(catalogue, issues, results) {
 }
 
 # The number of distinct units flagged: cells are column-row pairs, records
-# are rows, columns are columns, and a table counts once.
-flagged_units <- function(unit, column, row) {
+# are rows, columns are columns, groups are column-value pairs (an
+# enumerator and a measure), and a table counts once.
+flagged_units <- function(unit, column, row, value) {
   units <- switch(unit, cell = dplyr::n_distinct(paste(column, row)),
-                  record = dplyr::n_distinct(row), column = dplyr::n_distinct(column), 1L)
+                  record = dplyr::n_distinct(row), column = dplyr::n_distinct(column),
+                  group = dplyr::n_distinct(paste(column, value)), 1L)
   as.integer(units)
 }
 

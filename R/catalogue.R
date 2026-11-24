@@ -3,7 +3,7 @@
 #' Every check qualitas runs, one row each: its identifier, the function that
 #' runs it, what it looks for, the dimension it belongs to, the matching terms
 #' of ISO/IEC 25012, of Kahn et al. (2016) and of the dataquieR framework, the
-#' unit it counts (cell, record, column or table), its default severity and
+#' unit it counts (cell, record, column, group or table), its default severity and
 #' the source of the method.
 #'
 #' @return A tibble with one row per check.
@@ -24,15 +24,17 @@ checks_catalogue <- function() {
 #'
 #' @param issues A table with `column`, `row`, `value` and `message`; columns
 #'   that are absent are added as missing.
-#' @param checked The number of units (cells, records, columns or tables)
-#'   the check examined; zero when the check did not apply.
-#' @return A list with `issues` and `checked`.
+#' @param checked The number of units (cells, records, columns, groups or
+#'   tables) the check examined; zero when the check did not apply.
+#' @param error A message when the check could not run in whole or in part,
+#'   otherwise missing.
+#' @return A list with `issues`, `checked` and `error`.
 #' @export
 #' @examples
 #' check_result(data.frame(column = "age", row = 3, value = "-4",
 #'                         message = "below 0"), checked = 10)
-check_result <- function(issues = no_issues(), checked = 0L) {
-  list(issues = tidy_issues(issues), checked = as.integer(checked))
+check_result <- function(issues = no_issues(), checked = 0L, error = NA_character_) {
+  list(issues = tidy_issues(issues), checked = as.integer(checked), error = error)
 }
 
 # An empty table of issues, with the four columns every check reports.

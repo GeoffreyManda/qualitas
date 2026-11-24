@@ -13,7 +13,7 @@ A tibble with one row per check.
 Every check qualitas runs, one row each: its identifier, the function that
 runs it, what it looks for, the dimension it belongs to, the matching terms
 of ISO/IEC 25012, of Kahn et al. (2016) and of the dataquieR framework, the
-unit it counts (cell, record, column or table), its default severity and
+unit it counts (cell, record, column, group or table), its default severity and
 the source of the method.
 }
 \examples{

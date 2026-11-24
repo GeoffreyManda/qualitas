@@ -1,3 +1,9 @@
+# qualitas (development version)
+
+* FA06 counts an enumerator and a measure as one unit, both for the pairs it compares and for the pairs it flags; pairs that cannot be compared are not counted.
+* CS04 counts cells, both for the filled values it examines and for the text values it flags.
+* A rule that cannot be evaluated sets CS01 to `error` instead of being listed as a broken rule, and a check that could not run in full has no score.
+
 # qualitas 0.1.0
 
 First release.

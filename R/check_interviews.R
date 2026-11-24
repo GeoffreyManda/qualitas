@@ -61,19 +61,28 @@ check_enumerator_effects <- function(data, spec, options) {
   who <- as_text(data[[enumerators[1]]])
   measures <- c(purrr::map(data[measured_columns(spec, data)], as_number),
                 list(share_missing = rowMeans(as.data.frame(purrr::map(data, is_blank)))))
-  found <- purrr::imap(measures, \(value, column) enumerator_gap(value, who, column, options)) |>
+  # The unit is an enumerator and a measure; only the pairs that could be
+  # compared are counted as checked.
+  gaps <- purrr::imap(measures, \(value, column) enumerator_gap(value, who, column, options)) |>
     purrr::list_rbind() |>
-    dplyr::bind_rows(no_issues())
-  check_result(found, checked = length(measures) * dplyr::n_distinct(who, na.rm = TRUE))
+    dplyr::bind_rows(tibble::tibble(column = character(), who = character(),
+                                    mean = numeric(), z = numeric()))
+  found <- dplyr::filter(gaps, abs(.data$z) > options$enumerator_difference)
+  issues <- tibble::tibble(column = found$column, value = found$who,
+                           message = sprintf(paste("this enumerator's mean, %.3g, differs by",
+                                                   "%.1f standard deviations from the others'"),
+                                             found$mean, abs(found$z)))
+  check_result(issues, checked = nrow(gaps))
 }
 
-# The enumerators whose mean of one measure lies far from the others'.
+# Each enumerator's mean of one measure and its distance from the others'
+# records, for the enumerators that could be compared.
 enumerator_gap <- function(value, who, column, options) {
   means <- tibble::tibble(who, value) |>
     dplyr::filter(!is.na(.data$who), !is.na(.data$value)) |>
     dplyr::summarise(n = dplyr::n(), mean = mean(.data$value), .by = "who") |>
     dplyr::filter(.data$n >= options$group_min_n)
-  if (nrow(means) < 3) return(no_issues())
+  if (nrow(means) < 3) return(NULL)
   # Each enumerator is set against the other enumerators' records alone, in
   # standard deviations of those records.
   kept <- !is.na(who) & !is.na(value)
@@ -81,9 +90,7 @@ enumerator_gap <- function(value, who, column, options) {
     others <- value[kept & who != one]
     (mean(value[kept & who == one]) - mean(others)) / stats::sd(others)
   })
-  means <- dplyr::filter(means, is.finite(.data$z), abs(.data$z) > options$enumerator_difference)
-  tibble::tibble(column = rep(column, nrow(means)), value = means$who,
-                 message = sprintf(paste("this enumerator's mean, %.3g, differs by %.1f",
-                                         "standard deviations from the others'"),
-                                   means$mean, abs(means$z)))
+  means <- dplyr::filter(means, is.finite(.data$z))
+  tibble::tibble(column = rep(column, nrow(means)), who = means$who, mean = means$mean,
+                 z = means$z)
 }

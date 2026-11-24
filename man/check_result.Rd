@@ -4,17 +4,20 @@
 \alias{check_result}
 \title{The result of one check}
 \usage{
-check_result(issues = no_issues(), checked = 0L)
+check_result(issues = no_issues(), checked = 0L, error = NA_character_)
 }
 \arguments{
 \item{issues}{A table with \code{column}, \code{row}, \code{value} and \code{message}; columns
 that are absent are added as missing.}
 
-\item{checked}{The number of units (cells, records, columns or tables)
-the check examined; zero when the check did not apply.}
+\item{checked}{The number of units (cells, records, columns, groups or
+tables) the check examined; zero when the check did not apply.}
+
+\item{error}{A message when the check could not run in whole or in part,
+otherwise missing.}
 }
 \value{
-A list with \code{issues} and \code{checked}.
+A list with \code{issues}, \code{checked} and \code{error}.
 }
 \description{
 Checks return the problems they found and the number of units they

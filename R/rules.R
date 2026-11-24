@@ -37,27 +37,33 @@ check_rules <- function(data, spec, options) {
   rules <- options$rules
   if (is.null(rules) || nrow(rules) == 0) return(check_result())
   found <- purrr::pmap(rules, \(rule_id, expression, description, ...)
-                       rule_breaks(data, rule_id, expression, description)) |>
+                       rule_breaks(data, rule_id, expression, description))
+  failed <- purrr::compact(purrr::map(found, "error"))
+  error <- if (length(failed)) paste(failed, collapse = "; ") else NA_character_
+  issues <- purrr::map(found, "issues") |>
     purrr::list_rbind() |>
     dplyr::bind_rows(no_issues())
-  check_result(found, checked = nrow(data))
+  check_result(issues, checked = nrow(data), error = error)
 }
 
-# The records that break one rule. The value shown is the record's value of
-# each column the rule names; a rule that cannot be evaluated is reported
-# once, without a row.
+# The records that break one rule, with the error if the rule cannot be
+# evaluated. The value shown is the record's value of each column the rule
+# names. A rule that cannot be evaluated makes the check an error, since the
+# records it would have tested were not tested.
 rule_breaks <- function(data, rule_id, expression, description) {
   parsed <- rlang::parse_expr(expression)
   held <- tryCatch(rlang::eval_tidy(parsed, data), error = \(e) conditionMessage(e))
   if (is.character(held)) {
-    return(tibble::tibble(column = NA_character_, row = NA_integer_, value = expression,
-                          message = paste0("rule ", rule_id, " could not be evaluated: ", held)))
+    return(list(issues = no_issues(),
+                error = paste0("rule ", rule_id, " could not be evaluated: ", held)))
   }
   named <- intersect(all.vars(parsed), names(data))
   broken <- which(rep_len(held, nrow(data)) %in% FALSE)
   shown <- purrr::map_chr(broken, \(i) paste(named, as_text(unlist(data[i, named])),
                                              sep = " = ", collapse = "; "))
-  tibble::tibble(column = paste(named, collapse = ";"), row = broken, value = shown,
-                 message = rep(paste0("rule ", rule_id, " is broken: ", description),
-                               length(broken)))
+  list(issues = tibble::tibble(column = paste(named, collapse = ";"), row = broken,
+                               value = shown,
+                               message = rep(paste0("rule ", rule_id, " is broken: ",
+                                                    description), length(broken))),
+       error = NULL)
 }

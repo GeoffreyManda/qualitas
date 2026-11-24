@@ -38,13 +38,13 @@ test_that("near duplicates are found and exact duplicates left to UN01", {
   expect_false(7 %in% found)
 })
 
-test_that("rules are evaluated and a broken rule is reported, not raised", {
+test_that("a rule that cannot be evaluated makes the rule check an error", {
   data <- data.frame(start = as.Date(c("2026-01-01", "2026-03-01")),
                      end = as.Date(c("2026-02-01", "2026-02-01")))
   rules <- read_rules(c(ordered = "end >= start", broken = "no_such_column > 1"))
-  found <- check_rules(data, infer_spec(data), qualitas_options(rules = rules))$issues
-  expect_equal(found$row[!is.na(found$row)], 2)
-  expect_match(found$message[is.na(found$row)], "could not be evaluated")
+  result <- check_rules(data, infer_spec(data), qualitas_options(rules = rules))
+  expect_equal(result$issues$row, 2)
+  expect_match(result$error, "rule broken could not be evaluated")
 })
 
 test_that("outliers are found within groups", {

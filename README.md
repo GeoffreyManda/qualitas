@@ -128,7 +128,7 @@ Rscript "$(Rscript -e 'cat(system.file("bin", "qualitas.R", package = "qualitas"
 
 ## How measures and scores are computed
 
-Following Pipino, Lee and Wang (2002), each check states its result as a ratio. It counts the units it examined, which may be cells, records, columns or the whole table, the units it flagged, and the score 1 - flagged / checked. A dimension's score is the mean of its checks' scores, weighted 4, 2 and 1 for critical, major and minor checks; the overall score is the mean of the dimension scores. A check that examined nothing does not count.
+Following Pipino, Lee and Wang (2002), each check states its result as a ratio. It counts the units it examined, which may be cells, records, columns, groups (an enumerator and a measure) or the whole table, the units it flagged, and the score 1 - flagged / checked. A dimension's score is the mean of its checks' scores, weighted 4, 2 and 1 for critical, major and minor checks; the overall score is the mean of the dimension scores. A check that examined nothing, or that could not run in full, does not count.
 
 Outliers use the modified z-score of Iglewicz and Hoaglin (1993) with the limit 3.5, the limit used in the WHO Data Quality Review (2017). The digit preference score follows the SMART methodology, the Whipple index the United Nations grading, the Benford test the mean absolute deviation limits of Nigrini (2012), and near duplicates Kuriakose and Robbins (2016).
 

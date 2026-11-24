@@ -53,8 +53,8 @@ resolve_spec <- function(spec, data) {
 # reports its error and the others still run.
 run_check <- function(fn, data, spec, options) {
   check <- get(fn, envir = asNamespace("qualitas"), mode = "function")
-  tryCatch(c(check(data, spec, options), list(error = NA_character_)),
-           error = \(e) c(check_result(), list(error = conditionMessage(e))))
+  tryCatch(check(data, spec, options),
+           error = \(e) check_result(error = conditionMessage(e)))
 }
 
 # The assessment object: issues annotated from the catalogue, measures and
