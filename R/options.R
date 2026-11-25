@@ -62,6 +62,9 @@
 #'     missing values (0.1), move of the median in median absolute
 #'     deviations (0.5) and population stability index (0.25) beyond which
 #'     [compare_data()] flags a column.
+#'   * `latitude`, `longitude`: coordinate column names; omitted by default.
+#'   * `coordinate_bounds`: latitude minimum and maximum followed by longitude
+#'     minimum and maximum; defaults to the global geographic limits.
 #'   * `rules`: rules records must keep (see [read_rules()]).
 #'   * `tables`, `relations`: other tables and the keys that link them (see
 #'     [assess_tables()]).

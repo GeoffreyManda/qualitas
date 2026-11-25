@@ -58,12 +58,18 @@ rule_breaks <- function(data, rule_id, expression, description) {
                 error = paste0("rule ", rule_id, " could not be evaluated: ", held)))
   }
   named <- intersect(all.vars(parsed), names(data))
-  broken <- which(rep_len(held, nrow(data)) %in% FALSE)
+  if (!is.logical(held) || !is.atomic(held) || !is.null(dim(held)) ||
+      length(held) != nrow(data)) {
+    return(list(issues = no_issues(), error = paste0("rule ", rule_id,
+      " must return a logical vector with exactly one value per record")))
+  }
+  unresolved <- if (anyNA(held)) paste0("rule ", rule_id, " has unresolved NA results") else NULL
+  broken <- which(!is.na(held) & !held)
   shown <- purrr::map_chr(broken, \(i) paste(named, as_text(unlist(data[i, named])),
                                              sep = " = ", collapse = "; "))
   list(issues = tibble::tibble(column = paste(named, collapse = ";"), row = broken,
                                value = shown,
                                message = rep(paste0("rule ", rule_id, " is broken: ",
                                                     description), length(broken))),
-       error = NULL)
+       error = unresolved)
 }

@@ -1,13 +1,13 @@
 Package: qualitas
 Type: Package
 Title: General Data Quality Assessment with Rules, Scores and Reports
-Version: 0.1.1
+Version: 0.2.0
 Authors@R:
     person("Geoffrey", "Manda", role = c("aut", "cre"),
            email = "geofmanda@gmail.com", comment = c(ORCID = "0000-0001-8104-5021"))
-Description: Assesses the quality of any rectangular data set against a
-    data specification that can be inferred from the data or written by the
-    user. More than thirty checks cover structure, completeness, uniqueness,
+Description: Assesses rectangular data and workbook structure against
+    explicit specifications, with records of requirements, evidence and
+    review decisions. Data specifications can also be inferred for exploration. More than thirty checks cover structure, completeness, uniqueness,
     validity, consistency, plausibility, relational integrity, timeliness,
     fabrication and confidentiality. Each check is mapped to ISO/IEC 25012,
     the harmonised terminology of Kahn et al. (2016) <doi:10.13063/2327-9214.1244>
@@ -23,6 +23,8 @@ Language: en-GB
 Depends:
     R (>= 4.1.0)
 Imports:
+    digest,
+    xml2,
     cli,
     dplyr (>= 1.1.0),
     jsonlite,
@@ -36,6 +38,7 @@ Imports:
     tools,
     utils
 Suggests:
+    sf,
     knitr,
     rmarkdown,
     flextable,

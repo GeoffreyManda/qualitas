@@ -69,6 +69,9 @@ personal data.
 missing values (0.1), move of the median in median absolute
 deviations (0.5) and population stability index (0.25) beyond which
 \code{\link[=compare_data]{compare_data()}} flags a column.
+\item \code{latitude}, \code{longitude}: coordinate column names; omitted by default.
+\item \code{coordinate_bounds}: latitude minimum and maximum followed by longitude
+minimum and maximum; defaults to the global geographic limits.
 \item \code{rules}: rules records must keep (see \code{\link[=read_rules]{read_rules()}}).
 \item \code{tables}, \code{relations}: other tables and the keys that link them (see
 \code{\link[=assess_tables]{assess_tables()}}).

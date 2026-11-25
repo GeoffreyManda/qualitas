@@ -37,3 +37,4 @@ FA07,check_interview_hours,Interview starts or ends outside the working hours,fa
 PI01,check_pii_values,Value looks like personal data (e-mail address or phone number),confidentiality,Confidentiality,,,cell,critical,ISO/IEC 25012
 PI02,check_pii_columns,Column name suggests personal data,confidentiality,Confidentiality,,,column,major,ISO/IEC 25012
 DO01,check_documentation,Column has no description in the specification,documentation,Understandability,,,column,minor,Gebru et al. 2021; Wilkinson et al. 2016
+PL04,check_coordinates,Coordinate pair is incomplete or outside declared bounds,plausibility,Accuracy,Plausibility: atemporal,,record,major,Locally declared geographic bounds

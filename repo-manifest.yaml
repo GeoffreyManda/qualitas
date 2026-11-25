@@ -34,11 +34,14 @@
     "outputs/qualitas-article-*",
     "outputs/qualitas-authoring-integration.json",
     "outputs/qualitas-qc.json",
-    "outputs/qualitas-qc.md"
+    "outputs/qualitas-qc.md",
+    "outputs/qualitas_0.2.0.tar.gz",
+    "outputs/qualitas-gap-*",
+    "outputs/qualitas-gap-analysis.csv"
   ],
   "files": {
     "R/**": {
-      "role": "Package code: specification, checks, engine, measures, cleaning log, reports",
+      "role": "Package code: specifications, table and workbook checks, requirements evidence, geography, reconciliation, measures and reports",
       "phase": "package-code"
     },
     "tests/**": {
@@ -98,6 +101,9 @@
     },
     "outputs/qualitas-article-*": {
       "role": "Internal manuscript evidence, purpose, academic review and authoring diagnostics"
+    },
+    "outputs/qualitas-gap-*": {
+      "role": "Private gap analysis, ISO source locators and execution evidence for the next package version"
     }
   },
   "governance": {

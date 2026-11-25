@@ -134,6 +134,81 @@ dim(survey)
 checks_catalogue()[, c("check_id", "dimension")]
 ```
 
+## Check a shared exchange contract
+
+The contract helpers accept explicit requirements. They return defect tables without changing source records. Dictionary and indicator checks assess supplied declarations; the receiving team still checks coverage against the delivered fields and reviews their meaning.
+
+```{r shared-contract}
+dictionary <- data.frame(
+  element_id = "site.identifier", table = "visits", column = "site_id",
+  definition = "Persistent identifier of a physical site", type = "text",
+  unit = "not applicable", owner = "Example IA", version = "1.0")
+stopifnot(nrow(validate_dictionary(dictionary)) == 0L)
+sites <- data.frame(ia = c("a", "b"), site_id = c("01", "01"))
+visits <- data.frame(ia = c("a", "c"), site_id = c("01", "01"))
+relation <- data.frame(from = "visits", table = "sites")
+relation$columns <- relation$keys <- list(c("ia", "site_id"))
+key_findings <- assess_keys(list(sites = sites, visits = visits),
+  keys = list(sites = c("ia", "site_id")), relations = relation)
+stopifnot(identical(key_findings$requirement, "foreign_unmatched"))
+key_findings
+```
+
+Expected answers use a logical applicability mask supplied from the reviewed questionnaire. An unknown mask produces a review issue. Choice rules use declared codes and a literal separator; codes containing that separator need a child table.
+
+```{r expected-answers}
+answers <- data.frame(consent = c("yes", "no", NA), response = c("a;b", "a", NA))
+assess_answers(answers, "response", answers$consent == "yes")
+assess_choices(answers, "response", allowed = c("a", "b", "none"),
+  multiple = TRUE, exclusive = "none")
+counts <- data.frame(indicator_id = "visits", period = "2026-Q3", reported = 10, observed = 9)
+stopifnot(reconcile_counts(counts)$status == "issues found")
+```
+
+`assess_delivery()` verifies relative file paths, SHA-256, declared file sizes when supplied, required document roles and timestamp forms. A manifest declaration cannot establish the sender's identity or whether a questionnaire is substantively adequate. `review_findings()` records decisions against the source hash, dataset locator and assessment contract, preserving machine flags and scores. Encryption, questionnaire interpretation, independent back-checks and restoration tests require evidence outside these functions.
+
+## Reconcile revisions and compare groups
+
+Record reconciliation requires complete, unique keys and matching column types. The results separate additions, removals and cell changes. A normalization function is explicit and can itself expose duplicate keys.
+
+```{r record-revisions}
+before <- data.frame(agency = c("a", "b"), id = c("01", "01"), count = c(4L, 6L))
+after <- before
+after$count[2] <- 7L
+revision <- compare_records(before, after, keys = c("agency", "id"))
+stopifnot(revision$matched == 2L, nrow(revision$changes) == 1L,
+          revision$changes$column == "count")
+revision$changes
+```
+
+A functional dependency tests whether one entity has consistent declared attributes. Distribution comparisons retain both group and reference denominators and leave sparse comparisons unassessed.
+
+```{r grouped-comparisons}
+places <- data.frame(site = c("s1", "s1", "s2"), district = c("d1", "d2", "d2"))
+stopifnot(any(assess_dependencies(places, "site", "district")$results$flagged, na.rm = TRUE))
+responses <- data.frame(enumerator = rep(c("a", "b"), each = 4),
+                        answer = c(rep("yes", 4), rep("no", 4)))
+shares <- assess_distributions(responses, "enumerator", "answer", min_n = 4,
+                                difference = 0.3)
+stopifnot(all(shares$results$flagged))
+```
+
+## Screen declared geographic evidence
+
+Coordinates require an explicit WGS84 and longitude/latitude contract. Country or administrative containment requires a supplied polygon and its source version; a rectangle does not substitute for the polygon. Distances and clusters are screening signals requiring review.
+
+```{r geographic-evidence}
+visits <- data.frame(lon = c(0, 0, 200), lat = c(0, 0, 0),
+  site = c("s1", "s1", "s2"), day = as.Date(rep("2026-11-25", 3)))
+geo <- assess_geography(visits, "lon", "lat", crs = 4326,
+  axis = "longitude_latitude", site = "site", day = "day", cluster_n = 2)
+stopifnot(geo$results$pair[3] == "invalid", all(geo$results$clustered[1:2]))
+```
+
+`inspect_workbook()` returns saved XML facts, storage information and findings without source cell values. It does not authenticate an author or an encryption control. The package tests construct synthetic workbooks with planted structural faults, invalid relationships and untrusted XML, and compare the results with their declared fixtures.
+
+`assess_questionnaire()` checks a structured instrument definition. `assess_requirements()` uses exact requirement and scope identities, evidence-file hashes and review metadata. They preserve the need for human interpretation, documented collection authority and actual operational trials.
+
 ## Method references
 
 The check catalogue records the source and framework mapping for each check. The package draws on the harmonised terminology of Kahn et al. (2016), <https://doi.org/10.13063/2327-9214.1244>, the data-quality framework of Schmidt et al. (2021), <https://doi.org/10.1186/s12874-021-01252-7>, and the measurement approach of Pipino, Lee and Wang (2002), <https://doi.org/10.1145/505248.506010>. These mappings explain the package's organisation and do not represent formal certification against a standard.

@@ -168,3 +168,15 @@ R CMD check --as-cran qualitas_0.1.0.tar.gz
 ```
 
 A full manual check requires a TeX installation. Submission notes are maintained in `cran-comments.md`; they state the actual check environments and any outstanding results. The package has not yet been accepted by CRAN.
+
+## Shared data contracts
+
+Version 0.2.0 adds `validate_dictionary()` and `validate_indicators()` for shared definitions, `assess_keys()` for composite primary and foreign keys, `assess_answers()` and `assess_choices()` for questionnaire rules, `assess_delivery()` for file manifests and SHA-256, and `reconcile_counts()` for reported totals. Check PL04 screens coordinate pairs against declared bounds. `review_findings()` records evidence and decisions against an exact source and assessment contract. The getting-started vignette contains executable examples.
+
+These functions check explicit declarations. Dictionary coverage, semantic agreement between indicators, workbook structure, encryption and operational controls still require their own checks. ISO framework mappings describe the subject of a check; they do not certify an implementation against ISO standards.
+
+## Workbook and monitoring evidence
+
+`inspect_workbook()` reads saved XLSX structure without silently repairing headers or relying on a displayed worksheet. It records actual storage, formulas, physical gaps, merged cells, visibility and saved filter criteria. It keeps sheet protection separate from encryption and treats unreadable or malformed inputs as errors.
+
+For monitoring workflows, use `compare_records()` for stable-key cell reconciliation, `assess_dependencies()` for site-to-region or site-to-name consistency, `assess_distributions()` for categorical comparisons with minimum denominators, and `assess_geography()` for declared WGS84 locations and supplied polygon boundaries. `assess_questionnaire()` validates structured instrument metadata. `assess_requirements()` records coverage against exact-scope reviewed evidence, including operational trials and contractual documentation. These functions retain the limits of what their supplied data can establish.

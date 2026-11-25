@@ -93,3 +93,9 @@ yet established.
 ## Corrected journal snapshot, 24 November 2026
 
 Version 0.1.1 incorporates the committed FA06, CS04 and CS01 repairs and additional regression coverage. The source archive passed local R CMD check --as-cran with manual and vignettes enabled: 0 errors, 0 warnings, 2 notes (New submission and outdated HTML Tidy). All 129 test expectations passed. A stray pre-existing texput.log is excluded from the source build. This is the corrected JSS submission snapshot; the pending CRAN 0.1.0 archive remains unchanged and no replacement has been submitted to CRAN.
+
+## GitHub development release 0.2.0, 25 November 2026
+
+The GitHub release adds workbook structure inspection, explicit answer and metadata contracts, record reconciliation, geographic screens, questionnaire checks and scoped requirement evidence. Synthetic regression fixtures cover unsafe XLSX structures, ambiguous keys, unresolved rules, missing evidence and zero denominators. These mechanisms do not establish the truth of source declarations or organizational compliance. The original CRAN 0.1.0 submission remains unchanged. Version 0.2.0 will not be submitted while that review is pending; the maintainer has requested waiting for CRAN's reply. Final check results are recorded below after completion.
+
+Final 0.2.0 local R CMD check --as-cran, including installation, tests, examples, executable vignette and PDF reference manual: 0 errors, 0 warnings, 2 notes. The notes concern new-submission status and an outdated local HTML Tidy binary. The namespace note found during integration was repaired and the complete check repeated successfully. The source archive contains no client data, manuscript, internal plans or agent configuration.

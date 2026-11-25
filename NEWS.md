@@ -1,3 +1,21 @@
+# qualitas 0.2.0
+
+* `inspect_workbook()` inspects original XLSX structure and storage, including headers, hidden data, merged ranges, filters, formulas and workbook metadata, without extracting untrusted ZIP paths.
+* `compare_records()` reconciles complete unique composite keys and reports added, removed and changed records, with optional documented correction authority.
+* `assess_dependencies()` and `assess_distributions()` check functional dependencies and categorical group differences with explicit denominators and limits.
+* `assess_geography()` screens geographic pairs, polygon membership, distance from site centres and repeated locations using explicit CRS and boundary provenance.
+* `assess_questionnaire()` checks structured question identity, languages, choices, routing targets, numeric bands, units and event reference periods.
+* `assess_requirements()` links scoped requirements to hashed reviewed evidence and keeps missing, unverified, expired, failed and explained evidence distinct.
+* `assess_precision()` checks declared measurement resolution; `assess_missing_patterns()` uses explicit expected-answer masks.
+
+* Expected-answer masks distinguish missing expected answers, skipped answers and unresolved applicability. Choice contracts check allowed codes, duplicate selections, cardinality and exclusive options.
+* Shared dictionaries and indicator definitions can be checked for required metadata and duplicate identities.
+* Composite primary and foreign keys are checked without joining text values or coercing types. Missing references and ambiguous parent keys remain separate findings.
+* Delivery manifests are checked against SHA-256 hashes, required document roles and safe relative paths.
+* Reported counts can be reconciled with matched delivered counts, including zero denominators and invalid counts.
+* PL04 screens coordinate pairs against declared geographic bounds. This screen does not establish that a field visit occurred.
+* Review decisions bind to a source snapshot and retain the original flags and scores.
+
 # qualitas 0.1.1
 
 * FA06 counts an enumerator and a measure as one unit, both for the pairs it compares and for the pairs it flags; pairs that cannot be compared are not counted.

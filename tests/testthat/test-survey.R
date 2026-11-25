@@ -2,8 +2,9 @@
 # each check must find its defects and no others.
 
 survey_result <- function() {
+  # CO02 checks missing required ages; this rule tests adults with supplied ages.
   assess(messy_survey(), spec = messy_survey_spec(),
-         rules = c(consented = "consent == \"yes\"", adult = "as.numeric(age_years) >= 18"),
+         rules = c(consented = "consent == \"yes\"", adult = "is.na(age_years) | age_years == \"\" | as.numeric(age_years) >= 18"),
          options = qualitas_options(as_of = as.Date("2026-11-24")), name = "survey")
 }
 
@@ -77,4 +78,27 @@ test_that("measures and scores agree with the issues", {
   expect_equal(scores(result)$lowest[scores(result)$dimension == "fabrication"],
                min(fabrication$score))
   expect_equal(overall_score(result), mean(scores(result)$score))
+})
+
+
+test_that("explicit adult applicability retains completeness and unknown errors", {
+  data <- data.frame(age_years = c(NA_character_, "", "17", "20"))
+  spec <- infer_spec(data)
+  spec$type <- "integer"; spec$required <- TRUE
+  rule <- c(adult = 'is.na(age_years) | age_years == "" | as.numeric(age_years) >= 18')
+  result <- assess(data, spec = spec, rules = rule, checks = c("CO02", "CS01"))
+  expect_false(any(measures(result)$status == "error"))
+  expect_identical(found_rows(result, "CO02"), c(1L, 2L))
+  expect_identical(found_rows(result, "CS01"), 3L)
+  expect_equal(measures(result)$checked[measures(result)$check_id == "CS01"], 4L)
+  unknown <- assess(data, spec = spec, rules = c(adult = "as.numeric(age_years) >= 18"), checks = "CS01")
+  expect_identical(measures(unknown)$status, "error")
+  expect_true(is.na(measures(unknown)$score))
+  expect_match(measures(unknown)$error, "unresolved NA")
+  expect_identical(found_rows(unknown, "CS01"), 3L)
+  data$age_years[4] <- "unknown"
+  expect_warning(malformed <- assess(data, spec = spec, rules = rule, checks = "CS01"), "NAs introduced")
+  expect_identical(measures(malformed)$status, "error")
+  expect_true(is.na(measures(malformed)$score))
+  expect_identical(found_rows(malformed, "CS01"), 3L)
 })
