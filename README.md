@@ -1,6 +1,6 @@
 # qualitas
 
-qualitas assesses the quality of a data set in R. You describe what the data should hold, or let the package infer it; `assess()` runs 38 checks and returns every problem with its row, column and value, a measure for each check and a score for each of eleven dimensions. Each check is mapped to ISO/IEC 25012, to the harmonised framework of Kahn et al. (2016) and to dataquieR (Schmidt et al. 2021). A cleaning log records what is done about each problem. Reports can be written in four formats: HTML, Word, CSV and JSON.
+qualitas assesses the quality of a data set in R. You describe what the data should hold, or let the package infer it; `assess()` runs 39 checks and returns every problem with its row, column and value, a measure for each check and a score for each of eleven dimensions. Each check is mapped to ISO/IEC 25012, to the harmonised framework of Kahn et al. (2016) and to dataquieR (Schmidt et al. 2021). A cleaning log records what is done about each problem. Reports can be written in four formats: HTML, Word, CSV and JSON.
 
 ## Installation
 
@@ -52,7 +52,7 @@ The Benford test does not apply here, because no column is declared an amount.
 | uniqueness | UN01 to UN03 | repeated records, repeated keys, records that match another on nearly all values |
 | validity | VA01 to VA04 | values outside the allowed list, outside the range, not matching a pattern, or dated after the assessment |
 | consistency | CS01 to CS04 | broken rules, labels written in more than one way, stray spaces, text in a numeric column |
-| plausibility | PL01 to PL03 | outliers in a column or within a group, dates before the date they must follow |
+| plausibility | PL01 to PL04 | outliers in a column or within a group, dates before the date they must follow, coordinate pairs outside declared bounds |
 | integrity | IN01 | keys that match no record of a linked table |
 | timeliness | TI01 to TI02 | data older than allowed, periods without records |
 | fabrication | FA01 to FA07 | last-digit preference, age heaping, departures from Benford's law in declared amounts, interviews too short or too long, straightlining, enumerators whose records differ, interviews outside the working hours |

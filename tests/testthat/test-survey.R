@@ -4,7 +4,7 @@
 survey_result <- function() {
   # CO02 checks missing required ages; this rule tests adults with supplied ages.
   assess(messy_survey(), spec = messy_survey_spec(),
-         rules = c(consented = "consent == \"yes\"", adult = "is.na(age_years) | age_years == \"\" | as.numeric(age_years) >= 18"),
+         rules = system.file("extdata", "messy_survey_rules.csv", package = "qualitas", mustWork = TRUE),
          options = qualitas_options(as_of = as.Date("2026-11-24")), name = "survey")
 }
 
@@ -101,4 +101,26 @@ test_that("explicit adult applicability retains completeness and unknown errors"
   expect_identical(measures(malformed)$status, "error")
   expect_true(is.na(measures(malformed)$score))
   expect_identical(found_rows(malformed, "CS01"), 3L)
+})
+
+
+test_that("shipped survey rules reproduce the generator and preserve missing and underage findings", {
+  ext <- function(name) system.file("extdata", name, package = "qualitas", mustWork = TRUE)
+  shipped <- read_rules(ext("messy_survey_rules.csv"))
+  generated <- withr::local_tempdir()
+  write_messy_survey(generated)
+  expect_identical(read_rules(file.path(generated, "messy_survey_rules.csv")), shipped)
+  expect_identical(shipped$expression[shipped$rule_id == "adult"],
+    'is.na(age_years) | age_years == "" | as.numeric(age_years) >= 18')
+  # Use the same on-disk inputs and reader as the README example.
+  for (survey in list(read.csv(ext("messy_survey.csv")),
+                       readr::read_csv(ext("messy_survey.csv"), na = "", show_col_types = FALSE))) {
+  result <- assess(survey, spec = ext("messy_survey_spec.csv"),
+    rules = ext("messy_survey_rules.csv"), options = qualitas_options(as_of = as.Date("2026-11-24")))
+  expect_false(any(measures(result)$status == "error"))
+  expect_identical(found_rows(result, "CO02"), c(52L, 111L))
+  expect_identical(found_rows(result, "CS01"), c(50L, 110L, 111L))
+  expect_equal(measures(result)$flagged[measures(result)$check_id == "CO02"], 2L)
+  expect_equal(measures(result)$flagged[measures(result)$check_id == "CS01"], 3L)
+  }
 })

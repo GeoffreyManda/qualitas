@@ -81,8 +81,8 @@ write_messy_survey <- function(dir = "inst/extdata") {
   readr::write_csv(messy_survey(), file.path(dir, "messy_survey.csv"), na = "")
   write_spec(messy_survey_spec(), file.path(dir, "messy_survey_spec.csv"))
   readr::write_csv(tibble::tibble(rule_id = c("consented", "adult"),
-                                  expression = c("consent == \"yes\"",
-                                                 "as.numeric(age_years) >= 18"),
+                                  expression = c('!is.na(consent) & consent == "yes"',
+                                                 'is.na(age_years) | age_years == "" | as.numeric(age_years) >= 18'),
                                   description = c("only consenting respondents are interviewed",
                                                   "respondents are adults")),
                    file.path(dir, "messy_survey_rules.csv"))
