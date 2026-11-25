@@ -1,7 +1,7 @@
 Package: qualitas
 Type: Package
 Title: General Data Quality Assessment with Rules, Scores and Reports
-Version: 0.1.0
+Version: 0.1.1
 Authors@R:
     person("Geoffrey", "Manda", role = c("aut", "cre"),
            email = "geofmanda@gmail.com", comment = c(ORCID = "0000-0001-8104-5021"))

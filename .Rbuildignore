@@ -9,3 +9,7 @@
 ^cran-comments\.md$
 
 ^outputs$
+
+^manuscript$
+
+^texput\.log$
