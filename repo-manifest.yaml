@@ -28,7 +28,13 @@
     "cran-comments.md",
     "inst/extdata/README.md",
     "outputs/qualitas-manual.pdf",
-    "outputs/qualitas_0.1.0.tar.gz"
+    "outputs/qualitas_0.1.0.tar.gz",
+    "outputs/qualitas_0.1.1.tar.gz",
+    "manuscript/**",
+    "outputs/qualitas-article-*",
+    "outputs/qualitas-authoring-integration.json",
+    "outputs/qualitas-qc.json",
+    "outputs/qualitas-qc.md"
   ],
   "files": {
     "R/**": {
@@ -85,6 +91,13 @@
     },
     "outputs/qualitas_0.1.0.tar.gz": {
       "role": "Current source submission archive for review; generated and untracked"
+    },
+    "manuscript/**": {
+      "role": "Canonical Journal of Statistical Software manuscript source, verified bibliography, executable replication and generated article figures/PDF; excluded from the CRAN package archive",
+      "phase": "package-article"
+    },
+    "outputs/qualitas-article-*": {
+      "role": "Internal manuscript evidence, purpose, academic review and authoring diagnostics"
     }
   },
   "governance": {
@@ -94,7 +107,8 @@
         "package-test": "tests/testthat/",
         "package-test-runner": "tests/testthat.R",
         "package-cli": "inst/bin/",
-        "package-benchmark": "inst/benchmark/"
+        "package-benchmark": "inst/benchmark/",
+        "package-article": "manuscript/code.R"
       }
     }
   }

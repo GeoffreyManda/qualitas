@@ -9,3 +9,10 @@ qualitas_*.tar.gz
 plan.md
 
 outputs/
+
+manuscript/*.pdf
+manuscript/*.tex
+manuscript/*.R
+manuscript/*.sty
+manuscript/figures/
+!manuscript/code.R

@@ -1,0 +1,268 @@
+---
+title:
+  formatted: '\pkg{qualitas}: Data Quality Assessment and Recorded Corrections in \proglang{R}'
+  plain: 'qualitas: Data Quality Assessment and Recorded Corrections in R'
+  short: Data Quality Assessment with \pkg{qualitas}
+date: '2026-11-24'
+abstract: 'Reviewing a data delivery involves checking its contents, locating problems and recording decisions about
+  corrections. The qualitas package brings these activities together for rectangular data in R. A specification
+  defines expected columns, types, keys and permitted values, while optional rules express relationships within
+  records. A catalogue of checks returns findings with their coordinates, counts of assessed and flagged units,
+  and summaries by data-quality dimension. A cleaning log records decisions for findings that identify individual
+  records; applying the log produces a revised data set for reassessment. We describe the interface, the aggregation
+  of check scores, and the separation of requirements from statistical diagnostics. A synthetic survey illustrates
+  the workflow, public example data illustrate missing-cell counts, and shared-input comparisons with validate,
+  pointblank and dataquieR examine agreement on record-level findings and differences in missing-value denominators.
+  Six selected checks were timed at four table sizes. The examples show how to retain the meaning of individual
+  checks when reporting an assessment.
+
+  '
+author:
+- name: Geoffrey Manda
+  affiliation: Queen Mary University of London
+  address: London, United Kingdom
+  orcid: 0000-0001-8104-5021
+  email: \email{geofmanda@gmail.com}
+type: package
+output:
+  bookdown::pdf_book:
+    base_format: rticles::jss_article
+    keep_tex: true
+    latex_engine: pdflatex
+    citation_package: natbib
+bibliography: qualitas.bib
+header-includes:
+- \usepackage{amsmath,placeins,etoolbox}
+- \setlength{\tabcolsep}{5pt}
+- \renewcommand{\arraystretch}{1.2}
+- \BeforeBeginEnvironment{verbatim}{\begin{samepage}}
+- \AfterEndEnvironment{verbatim}{\end{samepage}}
+- \BeforeBeginEnvironment{CodeInput}{\begin{samepage}}
+- \AfterEndEnvironment{CodeInput}{\end{samepage}}
+- '\makeatletter
+
+  \def\@myoddhead{{\color{white} JSS}\\[-1.42cm]
+
+  \hspace{-2em}\includegraphics[height=23mm,keepaspectratio]{jsslogo}\hfill
+
+  \parbox[b][23mm][c]{118mm}{\hrule height 3pt\vfill\centering
+
+  {\fontfamily{pzc}\fontsize{28}{32}\selectfont Journal of Statistical Software}\par
+
+  \vfill\hrule height 3pt}}
+
+  \AtEndDocument{\begingroup\@nojsstrue\makefooter\endgroup}
+
+  \makeatother'
+documentclass: jss
+keywords:
+  formatted:
+  - data quality
+  - data validation
+  - survey data
+  - reproducible research
+  - \proglang{R}
+  plain:
+  - data quality
+  - data validation
+  - survey data
+  - reproducible research
+  - R
+classoption:
+- article
+- nofooter
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE,message=FALSE,warning=TRUE,comment="#>",
+                     fig.path="figures/",dev="cairo_pdf")
+source("code.R",local=knitr::knit_global())
+fnum <- function(x) format(x,big.mark=",",scientific=FALSE,trim=TRUE)
+```
+
+# Introduction
+
+Data quality depends on the use for which the data are intended [@pipino2002]. In survey and administrative data, missing responses can limit the information available for an analysis, duplicate identifiers can make record linkage ambiguous, and unusual measurements can require investigation before use. A decision about suitability therefore needs the requirements of the analysis and evidence about the observations that meet them. The affected observations also need to remain identifiable when analysts review findings and decide whether to correct a value.
+
+Published frameworks give structure to these judgements. Kahn and colleagues organise checks on electronic health records around conformance to requirements, completeness of values and plausibility of patterns [@kahn2016]. The framework implemented in \pkg{dataquieR} addresses integrity, completeness, consistency and accuracy in observational health research [@schmidt2021; @dataquier]. Quantifying these properties requires an appropriate unit: a missing-value check can count cells, while a duplicate-record check can count records. Relating flagged units to the units examined gives each measure an interpretable denominator [@pipino2002].
+
+\proglang{R} packages allow analysts to express requirements and assess data against them. In \pkg{validate}, reusable rules express expert knowledge and can be applied to successive versions of a data set [@validate2021]. The \pkg{pointblank} package supports validation plans, failure thresholds, reports and metadata for local and remote tables [@pointblank]. The \pkg{dataquieR} package combines detailed metadata with statistical assessments and reports [@dataquier]. For analysts reviewing repeated survey or administrative data deliveries, the further task is to carry those findings into documented decisions about individual observations and then assess the revised data against the same requirements.
+
+The \pkg{qualitas} package connects a predefined check catalogue, a reviewed data specification and recorded cleaning decisions. Each check returns findings and counts of assessed and flagged units; findings with record coordinates can enter a cleaning log for review and correction. We describe how these components work together and how check scores are combined. A synthetic survey illustrates assessment and correction, a matched rule comparison examines agreement with \pkg{validate}, and public data sets provide direct checks of missing-cell counts. Measured execution times describe the cost of six selected checks at four table sizes.
+
+# Design and assessment units
+
+## Keep requirements separate from observed values
+
+An analyst supplies the assessment with a data frame and a specification. Each specification row names a column and can declare its type, role, requiredness, uniqueness, bounds, allowed categories, pattern and description. Column roles identify fields such as interview identifiers, dates, interviewers and grouping variables. The optional `rules` argument holds logical expressions that should be true for valid records. Figure \@ref(fig:flow) shows how these inputs enter the assessment and how recorded decisions return a revised snapshot for another assessment.
+
+```{r flow, out.width="100%", fig.cap="Assessment and review in qualitas. A data snapshot, reviewed specification and optional record rules enter assess(). Findings identify the affected observations where coordinates are available, measures give counts of assessed and flagged units and scores summarise checks. Reporting and recording decisions are separate uses of the assessment. Applying a cleaning log produces a revised snapshot, which is passed explicitly to assess() again.", fig.alt="Three inputs, snapshot, specification and rules, feed assessment. Inspection leads either to reporting or to recorded decisions. Applying those decisions leads back to assessment."}
+knitr::include_graphics("figures/assessment-flow.pdf")
+```
+
+`infer_spec()` offers an initial description when a specification is unavailable. The inferred types and factor levels depend on the supplied data. Numeric bounds are left unspecified and must be supplied from the questionnaire or other requirements. The worked example supplies age bounds of 18 and 100 explicitly. In repeated deliveries, the reviewed specification can be saved using `write_spec()` and supplied again through `read_spec()` or a file path. Reusing the saved specification applies the same requirements to each delivery.
+
+The catalogue contains `r nrow(checks_catalogue())` checks in eleven dimensions. It covers structural properties, completeness, uniqueness, validity, consistency, plausibility, relational integrity, timeliness, interview diagnostics, confidentiality and documentation. Each catalogue entry identifies the implementing function, severity, measurement unit and correspondences with selected concepts in published frameworks.
+
+## Retain the denominator of each check
+
+For a check $j$ with a consistent unit of assessment, let $n_j$ denote the number of assessed units and $f_j$ the number of flagged units. The reported pass share follows the ratio form discussed by @pipino2002:
+
+\begin{equation}
+q_j = 1 - \frac{f_j}{n_j}, \qquad n_j > 0.
+(\#eq:check-score)
+\end{equation}
+
+A check without assessed units returns a missing score and a status of `not applicable`. An uncaught check error returns a status of `error` with its message. A check that ran can report either `passed` or `issues found`. These states remain available in `measures()`, including checks that contribute no score. For the checks used in the numerical examples, flagged cells are distinct column--row pairs, flagged records are distinct rows, and flagged columns are distinct column names.
+
+Within dimension $d$, the package weights the applicable check scores by their catalogue severity:
+
+\begin{equation}
+Q_d = \frac{\sum_{j\in J_d} w_j q_j}{\sum_{j\in J_d} w_j},
+\qquad
+w_j = \begin{cases}4 & \text{critical},\\2 & \text{major},\\1 & \text{minor}.\end{cases}
+(\#eq:dimension-score)
+\end{equation}
+
+Here $J_d$ contains the checks with available scores in that dimension; checks with unavailable scores contribute neither weight nor score. The reported overall score is the unweighted mean of the $D$ available dimension scores:
+
+\begin{equation}
+Q = \frac{1}{D}\sum_{d=1}^{D} Q_d.
+(\#eq:overall-score)
+\end{equation}
+
+The 4:2:1 severity weights and equal weighting of dimensions are package design choices. They determine how much each check can influence the summary; the published ratio formulation supplies the basis for the individual pass shares. Because the dimensions can concern different units, $Q$ has the meaning of a composite index. Interpretation of a specific problem still rests on its check, denominator and findings. The package also reports the lowest check score within each dimension, allowing a poor result on one check to remain visible beside its weighted mean.
+
+## Return findings for review
+
+`assess()` returns an S3 object of class `qualitas_assessment`. Its components retain the name and dimensions of the assessed data, specification, options, findings, measures and dimension scores. `issues()`, `measures()` and `scores()` return tibbles for further analysis, and the print and summary methods provide console summaries. A check is run inside an error handler, so its failure is recorded while the other selected checks continue.
+
+Findings have different locations depending on the check. A required-value finding can point to a cell, a repeated-key finding to a record and a documentation finding to a column. `cleaning_log()` retains findings with row coordinates and adds fields for the action, replacement value, reason and decision maker. Column and group findings require review outside this log. Row coordinates refer to the assessed snapshot, so reordering or replacing that snapshot before applying the log changes the meaning of those coordinates.
+
+# A worked review
+
+## Express the intake requirements
+
+The small example contains four interviews. Their identifiers are `I01`, `I02`, `I02` and `I04`; the second recorded age is 240, and the fourth district is missing. Ages must lie between 18 and 100, identifiers must be unique and all three variables are required. The following code creates the input table and the reviewed specification.
+
+```{r small-input, echo=TRUE, results="hide"}
+intake <- data.frame(
+  interview_id = c("I01", "I02", "I02", "I04"),
+  age = c(28L, 240L, 41L, 35L),
+  district = c("North", "South", "South", NA)
+)
+spec <- spec_complete(tibble::tibble(
+  column = c("interview_id", "age", "district"),
+  type = c("text", "integer", "category"),
+  required = TRUE,
+  unique = c(TRUE, FALSE, FALSE),
+  min = c(NA, "18", NA), max = c(NA, "100", NA),
+  allowed = c(NA, NA, "North;South")
+))
+result <- assess(intake, spec,
+                 checks = c("CO02", "UN02", "VA02"))
+```
+
+The assessment flags `r measures(initial)$flagged[measures(initial)$check_id=="CO02"]` required cell among `r measures(initial)$checked[measures(initial)$check_id=="CO02"]` assessed cells, `r measures(initial)$flagged[measures(initial)$check_id=="UN02"]` records with a repeated key among `r measures(initial)$checked[measures(initial)$check_id=="UN02"]` records, and `r measures(initial)$flagged[measures(initial)$check_id=="VA02"]` out-of-range age among `r measures(initial)$checked[measures(initial)$check_id=="VA02"]` observed ages (Table \ref{tab:intake}). Both occurrences of `I02` are flagged, which leaves the choice of retained record to the review. The counts concern three different assessment populations even though they arise from one four-row table.
+
+```{r intake, results="asis"}
+t <- intake_measures
+t$score <- sprintf("%.3f",t$score)
+names(t) <- c("Check","Unit","Assessed","Flagged","Pass share")
+cat("\\begin{table}[!htbp]\n\\centering\n",
+    knitr::kable(t,format="latex",booktabs=TRUE,align=c("l","l","r","r","r")),
+    "\n\\caption{Measures for each check in the four-interview intake example.}",
+    "\\label{tab:intake}\n\\end{table}\n",sep="")
+```
+
+## Record the age correction
+
+The synthetic exercise specifies that the second respondent's age should be 24. That information supplies the replacement; the assessment itself only identifies a value outside the stated bounds. A reviewer records the replacement and its reason in the cleaning log, while retaining the other findings for separate decisions.
+
+```{r age-correction, echo=TRUE, results="hide"}
+log <- cleaning_log(result)
+log$action <- "keep"
+log$reason <- "Awaiting review"
+i <- log$check_id == "VA02" & log$row == 2L
+log$action[i] <- "change"
+log$new_value[i] <- "24"
+log$reason[i] <- "Synthetic exercise specifies age 24"
+log$decided_by[i] <- "Example reviewer"
+corrected <- apply_log(intake, log)
+rechecked <- assess(corrected, spec,
+                    checks = c("CO02", "UN02", "VA02"))
+```
+
+After the correction, all four ages satisfy the specified bounds. The missing district and the two repeated-key records remain (Figure \@ref(fig:results)B). `apply_log()` returns the changed data with the applied changes attached as an attribute; the original R object remains available. Actions can leave values unchanged, replace individual cell values or remove whole records. The attached attribute retains changes and removals; the completed log also retains decisions to keep values. Reasons and reviewer names are fields for the reviewer to complete, and version 0.1.1 permits application of a log without requiring those fields to be filled. Retaining the original snapshot and the completed log therefore forms part of the surrounding data-management procedure.
+
+## Extend the assessment to the synthetic survey
+
+The bundled example contains `r nrow(survey)` interviews and `r ncol(survey)` variables. Its generator introduces duplicate records, invalid values, missing-value codes, short interviews, repeated response patterns and strings resembling personal identifiers. Expected types, bounds, allowed categories and roles are supplied in the example specification, and a separate rule table states conditions for consent and adult respondents. All identifiers and contact-like strings are synthetic.
+
+Figure \@ref(fig:results)A shows seven checks with their assessed and flagged counts. For example, the repeated-key check flags `r profile$flagged[profile$check_id=="UN02"]` of `r profile$checked[profile$check_id=="UN02"]` records, while the personal-data pattern check flags `r profile$flagged[profile$check_id=="PI01"]` of `r fnum(profile$checked[profile$check_id=="PI01"])` assessed cells. The pattern matches arise from the synthetic telephone-like column and email-like string. A single record can contribute findings under more than one check; the count of findings therefore differs from the count of affected records.
+
+`report()` writes an assessment to HTML or, with its optional document dependencies installed, to Word. `write_results()` exports the findings, measures, scores, specification and a JSON summary for other analyses. `compare_data()` compares successive deliveries through column presence, missingness and distribution summaries. For linked tables, `assess_tables()` accepts relations that name the source column, referenced table and target key, then evaluates unmatched foreign keys alongside the selected checks.
+
+```{r results, out.width="85%", fig.cap="Observed assessment quantities and execution times. A: seven checks on the 302-interview synthetic survey; labels give flagged/assessed units, with the unit named beside each check. B: the four-interview example before review (open circles) and after the specified age correction (filled circles). Required-value findings count cells, repeated-key findings count records and age-range findings count cells. C: elapsed wall-clock times for six selected checks on 100, 1,000, 10,000 and 50,000 sampled rows, with three repetitions after one warm-up at each size; points show all repetitions and the line connects medians. The values in A and B are deterministic descriptions of the assessed data. Timing repetitions describe variation on one machine.", fig.alt="Three panels show flagged shares for selected checks in the synthetic survey, removal of the age-range finding after correction, and observed elapsed times at four table sizes."}
+knitr::include_graphics("figures/assessment-results.pdf")
+```
+
+\FloatBarrier
+
+# Agreement on matching rules and public-data counts
+
+We compared shared requirements in \pkg{qualitas}, \pkg{validate} `r as.character(packageVersion("validate"))`, \pkg{pointblank} `r as.character(packageVersion("pointblank"))` and \pkg{dataquieR} `r as.character(packageVersion("dataquieR"))` [@validate2021; @pointblank; @dataquier]. The inputs were the four-interview table and the 302-record synthetic survey. Age values were converted to numeric once before passing the same table to each implementation; unparseable ages became missing. Blank district values were represented as missing. The shared requirements were inclusive age bounds of 18 to 100, an observed district and a unique interview identifier. Missing ages were excluded from range violations, and both occurrences of a duplicate identifier were flagged.
+
+\pkg{validate} expressed these requirements as logical rules, including `is_unique(id)`. \pkg{pointblank} used interval, non-null and distinct-row validation steps, with `na_pass = TRUE` for the age interval. For \pkg{dataquieR}, metadata defined the age variable and the hard interval `[18;100]`; `con_limit_deviations()` returned observation-level flags. Table \ref{tab:comparison} gives the counts. Exact record indices agreed across the three implementations for all three requirements on both inputs, and \pkg{dataquieR} identified the same age records. Direct calculations supplied an independent reference for every row set.
+
+```{r matched-rules, echo=TRUE, results="hide"}
+rules <- validate::validator(age >= 18, age <= 100)
+checks <- validate::confront(intake, rules)
+validate::values(checks)
+```
+
+
+```{r comparison, results="asis"}
+ct <- comparison |>
+  dplyr::mutate(dataset = paste0(dataset, " (", rows, ")")) |>
+  dplyr::select(dataset, requirement, qualitas, validate, pointblank, dataquieR)
+ct$dataquieR <- ifelse(is.na(ct$dataquieR), "--", as.character(ct$dataquieR))
+names(ct) <- c("Input", "Requirement", "qualitas", "validate", "pointblank", "dataquieR")
+cat("\\begin{table}[!htbp]\n\\centering\n",
+    knitr::kable(ct,format="latex",booktabs=TRUE,align=c("l","l","r","r","r","r")),
+    "\n\\caption{Flagged records under shared requirements. Inputs have 4 and 302 records. Exact record indices were compared in addition to counts. The dataquieR comparison covers age bounds; dashes denote the other requirements. Age conversion and missing-value handling were shared across inputs.}",
+    "\\label{tab:comparison}\n\\end{table}\n",sep="")
+```
+
+Agreement on flagged records leaves the scoring denominator to be interpreted. In a four-value age vector containing 28, 240, 41 and a missing value, \pkg{qualitas} assesses the three observed values and reports a pass share of 2/3. With `na_pass = TRUE`, \pkg{pointblank} counts four test units and reports 3/4 passing. Both flag the record containing 240. An analyst comparing aggregate scores must therefore carry the missing-value policy and test unit along with each value.
+
+The interfaces support different review decisions. \pkg{validate} exposes individual rule evaluations, while \pkg{pointblank} returns failed-row extracts and supports action thresholds and tables held in databases. \pkg{dataquieR} links its epidemiological indicators to detailed metadata and returns flags, summaries and diagnostic plots. \pkg{qualitas} joins a predefined catalogue and its assessed counts to a record-addressed cleaning log. Its built-in diagnostic definitions and severity aggregation are fixed by the package, with configurable thresholds and additional logical record rules. Analysts needing a database validation plan or richer epidemiological metadata can choose the corresponding tools; the examples establish agreement under shared requirements and illustrate how the interfaces differ.
+
+Outside \proglang{R}, \pkg{pandera} expresses data-frame schemas with column types and checks, and Great Expectations groups verifiable assertions into expectation suites [@pandera; @greatexpectations]. These documented approaches place requirements in reusable validation objects. The executed comparisons here concern the four \proglang{R} packages and their shared inputs.
+
+We also assessed missing-cell counts in the public `pbc` example in \pkg{survival} [@survival] and `storms` in \pkg{dplyr} [@dplyr]. In the installed versions, `pbc` contains 418 records and 20 variables; `storms` contains 20,778 records and 13 variables. The completeness check reports `r fnum(public_counts$flagged[public_counts$data=="pbc"])` of `r fnum(public_counts$checked[public_counts$data=="pbc"])` cells missing in `pbc` (`r sprintf("%.2f",public_counts$percent[public_counts$data=="pbc"])`%) and `r fnum(public_counts$flagged[public_counts$data=="storms"])` of `r fnum(public_counts$checked[public_counts$data=="storms"])` in `storms` (`r sprintf("%.2f",public_counts$percent[public_counts$data=="storms"])`%). These counts agree with `sum(is.na(data))` for each complete input table. In `pbc`, treatment is missing for participants outside the randomised trial. In `storms`, hurricane category is missing for storms outside hurricane status, and wind diameters are available only from 2004. The completeness counts include these entries according to their recorded missing-value status.
+
+# Execution time and implementation
+
+Elapsed time was measured for type conformance, missing cells, missing required values, duplicate keys, numeric ranges and record rules. Tables of 100, 1,000, 10,000 and 50,000 rows were sampled with replacement from the 19-variable synthetic survey using seed 20261124. At each size, one warm-up was followed by three timed assessments. The measurement includes construction of the assessment object and its findings and excludes file reading, report rendering and plotting. \proglang{R} `r getRversion()` [@R] ran on a macOS arm64 machine, with one R process and no package-level parallel execution.
+
+The median elapsed times were `r paste(sprintf("%.3f",timing_summary$median),collapse=", ")` seconds in increasing order of table size (Figure \@ref(fig:results)C). At 50,000 rows, the observed range was `r sprintf("%.3f",tail(timing_summary$min,1))` to `r sprintf("%.3f",tail(timing_summary$max,1))` seconds. These measurements describe the selected six-check workload on this machine. The full catalogue includes operations with different computational costs, notably comparisons for near-duplicate records, and the timing exercise excludes report writing and repeated-delivery comparison.
+
+The implementation uses \proglang{R} data frames and tibbles, with check functions returning a common findings table and an assessed count. `assess()` dispatches the selected catalogue functions sequentially, joins their findings to catalogue metadata and constructs the measures and summaries. This organisation allows users to select check identifiers while keeping the result structure stable. The package contains no compiled code. HTML reporting uses package code; Word reporting relies on the optional \pkg{officer} and \pkg{flextable} dependencies [@officer; @flextable]. The figures in this article are generated from the returned tables with \pkg{ggplot2} [@ggplot2].
+
+# Discussion
+
+qualitas returns the findings needed to record and apply cleaning decisions. In the four-interview example, a range violation becomes an explicit log entry, its replacement has a stated source, and a subsequent assessment shows the remaining problems. The catalogue and specification let that sequence be repeated across deliveries while retaining the requirements against which they were assessed. The tabular result components also allow analysts to develop displays appropriate to the observation units and review questions in their work.
+
+The shared-input comparisons show how matching requirements can identify the same records through different interfaces. Reusable logical rules are central to \pkg{validate}; validation plans, thresholds and remote-table operations are prominent in \pkg{pointblank}; detailed metadata and statistical health-data assessments underpin \pkg{dataquieR} [@validate2021; @pointblank; @dataquier]. qualitas places its predefined catalogue, editable specification and cleaning log for findings with row coordinates in the same assessment workflow.
+
+Aggregate scores change when different checks or dimensions apply, and the severity weights express priorities chosen in the package. In version 0.1.1, interviewer effects count comparable interviewer--measurement pairs in both the assessed and flagged totals. Mixed-type detection counts nonblank cells and flags the individual text cells in predominantly numeric columns. A failed rule evaluation sets the rule check to `error` with an unavailable score, while retaining findings from rules that evaluated successfully. On the synthetic survey, the interviewer-effects check flags `r profile$flagged[profile$check_id=="FA06"]` of `r profile$checked[profile$check_id=="FA06"]` comparable pairs; the mixed-type check flags `r profile$flagged[profile$check_id=="CS04"]` of `r profile$checked[profile$check_id=="CS04"]` nonblank cells. All catalogue checks are included in this assessment. The interview diagnostics identify patterns such as short interviews, repeated answers or digit preferences; their meaning depends on the questionnaire, recording conventions and field procedures.
+
+Cleaning decisions also depend on the identity of the input snapshot. The log addresses values by row and column, and applies sequential replacements before removing records. Reordered deliveries, conflicting replacements for one cell and missing decision reasons require handling in the surrounding review procedure. R rule expressions are evaluated against the data, so their source must be trusted. Reports include observed values and can contain identifying information; the confidentiality checks recognise selected patterns and names, while disclosure decisions still depend on the content being shared.
+
+The examples cover a synthetic survey, missingness in two public data sets and shared range, missingness and key requirements. The timing results apply to the six specified checks and sampled table sizes.
+
+# Availability
+
+The accompanying source archive contains \pkg{qualitas} 0.1.1 under the MIT licence. The development repository and documentation are at <https://github.com/GeoffreyManda/qualitas>. The accompanying R Markdown source and replication code generate the examples, tables and figures using the bundled synthetic survey and public package data. The working examples use \pkg{validate} `r as.character(packageVersion("validate"))`, \pkg{survival} `r as.character(packageVersion("survival"))` and \pkg{dplyr} `r as.character(packageVersion("dplyr"))`. The synthetic survey generator is included with the package tests.
